@@ -2,7 +2,7 @@
 
 using Microsoft.EntityFrameworkCore;
 
-namespace HairdresserApp;
+namespace HairdresserApp.Models;
 
 //Composite primary key
 [PrimaryKey(nameof(HairdresserId), nameof(ServiceId))]

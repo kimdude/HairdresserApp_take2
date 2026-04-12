@@ -3,7 +3,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 
-namespace HairdresserApp;
+namespace HairdresserApp.Models;
 
 //Indexing email
 [Index(nameof(Email), IsUnique = true)]

@@ -1,17 +1,27 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using HairdresserApp.Models;
+using HairdresserApp.ViewModels;
+using Microsoft.VisualBasic;
+using HairdresserApp.Data;
+using SQLitePCL;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace HairdresserApp.Controllers;
 
+//Controller inheriting from instance controller
 public class HomeController : Controller
 {
-    public IActionResult Index()
+
+    private readonly ApplicationDbContext _context;
+
+    public HomeController(ApplicationDbContext context)
     {
-        return View();
+        _context = context;
     }
 
-    public IActionResult Privacy()
+    //Homepage view
+    public IActionResult Index()
     {
         return View();
     }

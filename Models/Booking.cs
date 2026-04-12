@@ -2,7 +2,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace HairdresserApp;
+namespace HairdresserApp.Models;
 
 public class Booking
 {
