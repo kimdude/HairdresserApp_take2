@@ -3,11 +3,71 @@
 @model BookingViewModel
 
 @{
+    /* View over bookings-form for customers */
+    
     ViewData["Title"] = "Boka tid";
 }
 
 <h1>Skapa bokning</h1>
 
 <form method="post">
-    <label asp-for="Hairdressers"></label>
+
+    @{
+        if(Model.BookingStep == 1) 
+        {
+
+            @* Hairdresser selection *@
+            <div>
+                <label asp-for="SelectedHairdresserId"></label>
+                <select asp-for="SelectedHairdresserId" asp-items="Model.Hairdressers">
+                    <option value="">Välj frisör</option>
+                </select>
+            </div>
+
+            @* Time and date selection *@
+
+            <button>Nästa</button>
+
+        } 
+        else if(Model.BookingStep == 2) 
+        {
+
+            @* Email input *@
+            <div>
+                <label asp-for="Email"></label>
+                <input asp-for="Email" />
+            </div>
+
+            <button>Nästa</button>
+
+        } 
+        else if(Model.BookingStep == 3) 
+        {
+            @* Firstname input *@
+            <div>
+                <label asp-for="CustomerFname"></label>
+                <input asp-for="CustomerFname" />
+            </div>
+
+            @* Surname input *@
+            <div>
+                <label asp-for="CustomerLname"></label>
+                <input asp-for="CustomerLname" />
+            </div>
+
+            <button>Bekräfta</button>  
+        } 
+        else if(Model.BookingStep == 4) {
+
+            @* Booking confirmation *@
+            <h2>Vill du lägga bokningen?</h2>
+            <p>Tjänst: <strong>@Model.ServiceId</strong></p>
+            <p>Frisör: <strong>@Model.SelectedHairdresserId</strong></p>
+            <p>Datum och tid: <strong>@Model.SelectedDateAndTime</strong></p>
+            <p>Din email: <strong>@Model.Email</strong></p>
+
+            <input type="submit" value="Boka" />
+        }
+    }
+
 </form>

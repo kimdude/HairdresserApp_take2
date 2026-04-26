@@ -23,6 +23,8 @@ public class HomeController : Controller
     //Homepage view
     public IActionResult Index()
     {
+
+        //Return OfferedServices
         return View();
     }
 

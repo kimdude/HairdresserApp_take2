@@ -18,7 +18,16 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+  background-color: #F0E6D8;
+}
+
+main {
+  background-color: #fcf9f5;
+}
+
+
+header,footer {
+  background-color: #A4AA84;
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
