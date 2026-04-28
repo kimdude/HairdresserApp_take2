@@ -25,9 +25,12 @@ main {
   background-color: #fcf9f5;
 }
 
-
 header,footer {
   background-color: #A4AA84;
+}
+
+nav {
+  background-color: #E5E8D5;
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {

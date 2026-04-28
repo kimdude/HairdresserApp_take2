@@ -1,3 +1,5 @@
+// View for booking and hairdressers
+
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Rendering;
 

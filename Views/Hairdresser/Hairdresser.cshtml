@@ -1,0 +1,17 @@
+@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+    
+@{
+    /* View over hairdressers */
+
+    ViewData[index: "Title"] = "Tjänster";
+}
+
+<section>
+    <h1>Samtliga tjänster</h1>
+
+
+</section>
+<a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
