@@ -54,10 +54,16 @@ public class HairdresserController : Controller
     }
 
     /* CREATE */
+    //Returning hairdresser form
+    public async Task<IActionResult> CreateHairdresser()
+    {
+        return View();
+    }
+
     //Add hairdresser
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> AddHairdresser([Bind("Fname,Lname")] Hairdresser hairdresser)
+    public async Task<IActionResult> CreateHairdresser([Bind("Fname,Lname")] Hairdresser hairdresser)
     {
         if (ModelState.IsValid)
         {
@@ -70,7 +76,7 @@ public class HairdresserController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        return View(hairdresser);
+        return View(hairdresser); //THROWS ERROR COULDN'T FIND VIEW
     }
 
     /* EDIT */

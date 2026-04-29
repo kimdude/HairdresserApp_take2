@@ -1,0 +1,23 @@
+@model HairdresserApp.Models.Hairdresser
+    
+@{
+    /* View to add hairdresser */
+
+    ViewData[index: "Title"] = "Ny frisör";
+}
+
+<section>
+    <h1>Ny frisör</h1>
+    
+    <form method="post">
+        <label asp-for="Fname"></label>
+        <input asp-for="Fname" />
+        <span asp-validation-for="Fname"></span>
+        <br />
+        <label asp-for="Lname"></label>
+        <input asp-for="Lname" />
+        <span asp-validation-for="Lname"></span>
+        <br />
+        <input type="submit" value="Sluför registrering" />
+    </form>
+</section>

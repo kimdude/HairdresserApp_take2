@@ -1,0 +1,21 @@
+@model IEnumerable<HairdresserApp.Models.Hairdresser>
+    
+@{
+    /* View over hairdressers */
+
+    ViewData[index: "Title"] = "Frisörer";
+}
+
+<section>
+    <h1>Frisörer</h1>
+
+    <ul>
+    @foreach(var hairdresser in Model) {
+        <li>
+            @hairdresser.Fname
+        </li>
+    }
+    </ul>
+
+    <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Ny frisör</a>
+</section>

@@ -1,12 +1,8 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using HairdresserApp.Models;
-using HairdresserApp.ViewModels;
-using Microsoft.VisualBasic;
 using HairdresserApp.Data;
-using SQLitePCL;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace HairdresserApp.Controllers;
 
@@ -50,10 +46,16 @@ public class ServiceController : Controller
     }
 
     /* CREATE */
+    //Return form to add service
+    public IActionResult CreateService()
+    {
+        return View();
+    }
+
     //Add service
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> AddService([Bind("Title, Description, Price, Duration")] Service service)
+    public async Task<IActionResult> CreateService([Bind("Title, Description, Price, Duration")] Service service)
     {
         if (ModelState.IsValid)
         {
@@ -61,30 +63,47 @@ public class ServiceController : Controller
             _context.Add(service);
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(GetServices));
         }
 
         return View(service);
     }
 
+    //Return view to add available service
+    public IActionResult AddOfferedService(int serviceId, string serviceTitle)
+    {
+
+        ViewData["Hairdresser"] = new SelectList(_context.Hairdressers, "Id", "Fname");
+        ViewBag.ServiceId = serviceId;
+        ViewBag.ServiceTitle = serviceTitle; 
+
+        return View();
+    }
+
     //Add available service
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> AddOfferedService([Bind("HairdresserId, ServiceId")] OfferedService offeredService)
+    public async Task<IActionResult> AddOfferedService([Bind("HairdresserId,ServiceId")] OfferedService offeredService)
     {
+        Console.WriteLine(offeredService.ServiceId);
         if (ModelState.IsValid)
         {
-            
             _context.Add(offeredService);
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(GetServices));
         }
 
-        return View(offeredService);
+        return View();
     }
 
     /* EDIT */
+    //Return view to update service
+    public IActionResult UpdateService()
+    {
+        return View();
+    }
+
     //Update service
     [HttpPost]
     [ValidateAntiForgeryToken]

@@ -17,7 +17,7 @@ public class Service
     public string? Description { get; set; }
 
     [Required]
-    [Range(0,10000)]
+    [DataType(DataType.Currency)]
     public decimal Price { get; set; }
 
     [Required]

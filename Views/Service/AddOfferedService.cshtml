@@ -1,0 +1,23 @@
+@model HairdresserApp.Models.OfferedService
+    
+@{
+    /* View to add offered service */
+
+    ViewData[index: "Title"] = "Lägg till frisör för tjänst";
+}
+
+<section>
+    <h1>Lägg till frisör som erbjuder @ViewBag.ServiceTitle</h1>
+    <form asp-action="AddOfferedService" method="post">
+
+        <!-- Hidden service Id -->
+        <input type="hidden" asp-for="ServiceId" value="@ViewBag.ServiceId"/>
+
+        <br />
+        <label asp-for="HairdresserId"></label>
+        <select asp-for="HairdresserId" asp-items="ViewBag.Hairdresser"></select>
+        <span asp-validation-for="HairdresserId"></span>
+        <br />
+        <input type="submit" value="Lägg till" />
+    </form>
+</section>

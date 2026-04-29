@@ -19,10 +19,13 @@
     <nav class="navbar navbar-expand-lg">
         <ul class="navbar-nav me-auto">
             <li class="nav-item">
-                <a asp-controller="Booking" asp-action="ListBookings" class="nav-link">Bokningar</a>
+                <a asp-controller="Booking" asp-action="GetBookings" class="nav-link">Bokningar</a>
             </li>
             <li class="nav-item">
-                <a asp-controller="Hairdresser" asp-action="Hairdresser" class="nav-link">Tjänster</a>
+                <a asp-controller="Service" asp-action="GetServices" class="nav-link">Tjänster</a>
+            </li>
+            <li class="nav-item">
+                <a asp-controller="Hairdresser" asp-action="GetHairdressers" class="nav-link">Frisörer</a>
             </li>
         </ul>
     </nav>
