@@ -1,11 +1,8 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using HairdresserApp.Models;
-using HairdresserApp.ViewModels;
-using Microsoft.VisualBasic;
 using HairdresserApp.Data;
-using SQLitePCL;
-using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace HairdresserApp.Controllers;
 
@@ -21,11 +18,10 @@ public class HomeController : Controller
     }
 
     //Homepage view
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-
-        //Return OfferedServices
-        return View();
+        var OfferedServices = await _context.Services!.Where(service => service.OfferedServices.Any()).Include(service => service.OfferedServices).ThenInclude(offeredService => offeredService.Hairdresser).ToListAsync();
+        return View(OfferedServices);
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

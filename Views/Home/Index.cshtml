@@ -1,4 +1,4 @@
-﻿
+﻿@model  IEnumerable<HairdresserApp.Models.Service>
 @{
     /* View over available bookings for customers */
     
@@ -15,6 +15,26 @@
 
     <!-- All available services -->
     <div>
-        
+        @foreach(Service service in Model) {
+            <article>
+                <h3>
+                    @service.Title
+                </h3>
+
+                <!-- Details -->
+                <div>
+                    <p>
+                        Tid: @service.Duration
+                    </p>
+                    <p>
+                        Pris: @service.Price
+                    </p>
+                </div>
+
+                <p>
+                    @service.Description
+                </p>
+            </article>
+        }
     </div>
 </section>
