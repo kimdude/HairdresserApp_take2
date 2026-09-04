@@ -41,3 +41,66 @@ nav {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+/* Buttons */
+.beigeBtn {
+  display: block;
+  width: fit-content;
+  margin: 20px auto 0px auto;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  text-decoration: none;
+  background-color: #CAAB97;
+
+}
+
+.beigeBtn:hover {
+  background-color: #a88771;
+}
+
+/* Index */
+#serviceContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.serviceBlock {
+  width: 30%;
+  padding: 10px 20px;
+  margin: 20px 10px;
+  border: solid 1px #CAAB97;
+  background-color: white;
+}
+
+.serviceDetails {
+  display: flex;
+}
+
+.serviceDetails p:first-of-type {
+  margin-right: 40px;
+}
+
+/* Booking form */
+.titleContainer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.stepCounter {
+  display: flex;
+  align-items: center;
+}
+
+.counterBars {
+  height: 5px;
+  width: 20px;
+  margin: 0px 2px;
+  background-color: rgb(203, 227, 255);
+}
+
+.activeBar {
+  background-color: #258cfb;
+}

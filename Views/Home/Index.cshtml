@@ -14,15 +14,15 @@
     <h2>Våra tjänster</h2>
 
     <!-- All available services -->
-    <div>
+    <div id="serviceContainer">
         @foreach(Service service in Model) {
-            <article>
+            <article class="serviceBlock">
                 <h3>
                     @service.Title
                 </h3>
 
                 <!-- Details -->
-                <div>
+                <div class="serviceDetails">
                     <p>
                         Tid: @service.Duration
                     </p>
@@ -34,6 +34,9 @@
                 <p>
                     @service.Description
                 </p>
+
+                <!-- Booking action -->
+                <a class="beigeBtn" asp-action="CreateBooking" asp-controller="Booking" asp-route-serviceId="@service.Id" asp-route-serviceTitle="@service.Title">Boka</a>
             </article>
         }
     </div>
