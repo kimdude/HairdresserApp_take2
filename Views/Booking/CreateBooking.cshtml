@@ -1,3 +1,4 @@
+@using System.Globalization
 @using HairdresserApp.ViewModels
 
 @model BookingViewModel
@@ -16,6 +17,7 @@
         <div class="counterBars @(Model.BookingStep == 2 ?"activeBar" : "")"></div>
         <div class="counterBars @(Model.BookingStep == 3 ?"activeBar" : "")"></div>
         <div class="counterBars @(Model.BookingStep == 4 ?"activeBar" : "")"></div>
+        <div class="counterBars @(Model.BookingStep == 5 ?"activeBar" : "")"></div>
     </div>
 </div>
 
@@ -40,16 +42,54 @@
                 <span asp-validation-for="SelectedHairdresserId"></span>
             </div>
 
-            @* Time and date selection *@
-
             <button class="beigeBtn">Nästa</button>
 
-        } 
-        else if(Model.BookingStep == 2) 
+        } else if(Model.BookingStep == 2) {
+
+            <!-- Hidden input for hairdresser -->
+            <input type="hidden" asp-for="SelectedHairdresserId" value="@Model.SelectedHairdresserId"/>
+
+            @* Time and date selection *@
+            <table class="calendar">
+                <thead>
+                    <tr>
+                        <th colspan="5">Vecka @ViewBag.Week</th>
+                    </tr>
+                    <tr>
+                        @foreach(DateTime day in ViewBag.Day) {
+                        <th scope="col">@day.ToString("ddd d'/'M", new CultureInfo("sv-SE"))</th>
+                        }
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach(string hour in ViewBag.Hours) {
+                    <tr>
+                        @foreach(DateTime day in ViewBag.Day) {
+                            DateTime selectedTime = day.Date.Add(TimeSpan.Parse(hour)); //Adding time to date object
+
+                            List<DateTime> bookedHours = ViewBag.BookedHours;
+                            bool unavailable = bookedHours.Any(booking => booking == selectedTime); //Checking if datetime already is booked
+
+                            @if(selectedTime < DateTime.Now || unavailable) { 
+                                <td>Ej tillgänglig</td>
+                            }
+                            else {
+                                <td><button class="timeBtn" name="SelectedDateAndTime" value="@selectedTime">@hour</button></td>
+                            }
+                        }
+                    </tr>
+                    }
+                </tbody>
+            </table>
+
+        }
+        else if(Model.BookingStep == 3) 
         {
 
             <!-- Hidden input for hairdresser -->
             <input type="hidden" asp-for="SelectedHairdresserId" value="@Model.SelectedHairdresserId"/>
+            <input type="hidden" asp-for="SelectedDateAndTime" value="@Model.SelectedDateAndTime"/>
 
             @* Email input *@
             <div>
@@ -61,11 +101,12 @@
             <button class="beigeBtn">Nästa</button>
 
         } 
-        else if(Model.BookingStep == 3) 
+        else if(Model.BookingStep == 4) 
         {
 
             <!-- Hidden inputs for previous chosen values -->
             <input type="hidden" asp-for="SelectedHairdresserId" value="@Model.SelectedHairdresserId"/>
+            <input type="hidden" asp-for="SelectedDateAndTime" value="@Model.SelectedDateAndTime"/>
             <input type="hidden" asp-for="Email" value="@Model.Email"/>
             <input type="hidden" asp-for="CustomerId" value="@Model.CustomerId"/>
             
@@ -85,9 +126,10 @@
 
             <button class="beigeBtn">Bekräfta</button>  
         } 
-        else if(Model.BookingStep == 4) {
+        else if(Model.BookingStep == 5) {
             <!-- Hidden inputs for previous chosen values -->
             <input type="hidden" asp-for="SelectedHairdresserId" value="@Model.SelectedHairdresserId"/>
+            <input type="hidden" asp-for="SelectedDateAndTime" value="@Model.SelectedDateAndTime"/>
             <input type="hidden" asp-for="Email" value="@Model.Email"/>
             <input type="hidden" asp-for="CustomerId" value="@Model.CustomerId"/>
             <input type="hidden" asp-for="CustomerFname" value="@Model.CustomerFname"/>

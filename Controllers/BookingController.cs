@@ -7,6 +7,8 @@ using HairdresserApp.Data;
 using SQLitePCL;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
+using HairdresserApp.Services;
 
 namespace HairdresserApp.Controllers;
 
@@ -30,7 +32,7 @@ public class BookingController : Controller
 
 
         // Getting all bookings
-        var bookings = await _context.Booking.Include(booked => booked.BookedServices).Include(booked => booked.Hairdresser).Include(booked => booked.Customer).ToListAsync();
+        var bookings = await _context.Booking.Include(booked => booked.BookedServices).ThenInclude(service => service.Service).Include(booked => booked.Hairdresser).Include(booked => booked.Customer).ToListAsync();
         
         return View(bookings);
     }
@@ -58,8 +60,6 @@ public class BookingController : Controller
     //Returning view to bookingform
     public IActionResult CreateBooking(int serviceId, string serviceTitle)
     {
-        Console.WriteLine(serviceTitle);
-        Console.WriteLine(serviceId);
         
         BookingViewModel bookingVm = new BookingViewModel();
 
@@ -88,8 +88,30 @@ public class BookingController : Controller
 
             if(ModelState.IsValid)
             {
+                /* Setting up calendar */
+                var calendar = new SetupCalender();
+
+                int week = calendar.GetWeek();
+                ViewBag.Week = week;
+
+                List<DateTime> weekDays = calendar.GetWeekdays(DateTime.Now);
+                ViewBag.Day = weekDays;
+
+                string[] startingHours = {"08:00", "09:00", "10:00", "11:00", "13:00", "14:00", "15:00", "16:00"};
+                ViewBag.Hours = startingHours;   
+
+                //Get datetimes of hairdresser within timerange
+                List<DateTime> bookedDates = await _context.Booking!.Where(booking => booking.HairdresserId == bookingVm.SelectedHairdresserId && 
+                    booking.DateAndTime >= weekDays.First().Date && //Where date is after/at startdate
+                    booking.DateAndTime <= weekDays.Last().Date.AddDays(1)) //Where date is before/at enddate
+                    .Select(booking => booking.DateAndTime) //Return date and time
+                    .ToListAsync();
+
+                ViewBag.BookedHours = bookedDates;
+
                 //Set step
                 bookingVm.BookingStep = 2;
+
             } else
             {
                 //Creating select-list
@@ -98,6 +120,19 @@ public class BookingController : Controller
 
         } 
         else if(bookingVm.BookingStep == 2)
+        {
+            
+            //Get button data & value
+
+
+            //Store selectedDateTime
+
+
+            //Set step
+            bookingVm.BookingStep = 3;
+
+        }
+        else if(bookingVm.BookingStep == 3)
         {
 
             //Validating only hairdresser & email
@@ -121,11 +156,11 @@ public class BookingController : Controller
                 }
 
                 //Set step
-                bookingVm.BookingStep = 3;
+                bookingVm.BookingStep = 4;
 
             }
         } 
-        else if(bookingVm.BookingStep == 3)
+        else if(bookingVm.BookingStep == 4)
         {
 
             if(ModelState.IsValid)
@@ -143,10 +178,10 @@ public class BookingController : Controller
                 bookingVm.ServicePrice = servicePrice;
 
                 //Set step
-                bookingVm.BookingStep = 4;
+                bookingVm.BookingStep = 5;
             }
 
-        } else if(bookingVm.BookingStep == 4)
+        } else if(bookingVm.BookingStep == 5)
         {
             if(ModelState.IsValid)
             {
@@ -176,9 +211,18 @@ public class BookingController : Controller
                     CustomerId = bookingVm.CustomerId
                 };
 
-                _context.Add(booking);
+                _context.Booking.Add(booking);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index)); //RETURN SOMETHING ELSE
+                
+                //Connecting to service table
+                var bookedService = new BookedService
+                {
+                    BookingId = booking.Id,
+                    ServiceId = bookingVm.ServiceId
+                };
+
+                _context.BookedServices!.Add(bookedService);
+                await _context.SaveChangesAsync();
             }
             
         }
@@ -201,4 +245,5 @@ public class BookingController : Controller
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
+
 }

@@ -1,5 +1,4 @@
-@using Microsoft.AspNetCore.Identity
-    
+@model IEnumerable<HairdresserApp.Models.Booking>
 @{
     /* View over services */
 
@@ -9,5 +8,32 @@
 <section>
     <h1>Alla bokningar</h1>
 
+    <table>
+        <thead>
+            <tr>
+                <td>Datum</td>
+                <td>Tid</td>
+                <td>Kund</td>
+                <td>Tjänst</td>
+                <td>Frisör</td>
+                <td>Pris</td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(Booking booking in Model) {
+            <tr>
+                <td>@booking.DateAndTime</td>
+                <td>@booking.DateAndTime</td>
+                <td>@booking.Customer?.Fname @booking.Customer?.Lname</td>
+                <td>@foreach(BookedService bookedService in booking.BookedServices) {
+                        @bookedService.Service?.Title
+                    }  
+                </td>
+                <td>@booking.Hairdresser?.Fname @booking.Hairdresser?.Lname</td>
+                <td>@booking.TotalCost</td>
+            </tr>
+            }
+        </tbody>
+    </table>
 
 </section>

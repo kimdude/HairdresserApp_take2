@@ -43,21 +43,64 @@ nav {
 }
 
 /* Buttons */
-.beigeBtn {
+.timeBtn, .beigeBtn {
   display: block;
   width: fit-content;
-  margin: 20px auto 0px auto;
   padding: 10px 20px;
   border: none;
   border-radius: 10px;
+}
+
+.beigeBtn {
+  margin: 20px auto 0px auto;
   color: white;
   text-decoration: none;
   background-color: #CAAB97;
-
 }
 
 .beigeBtn:hover {
   background-color: #a88771;
+}
+
+.timeBtn {
+  margin: 10px auto 0px auto;
+  background-color: #A4AA84;
+  color: #f8faed; 
+  font-weight: 700;
+}
+
+.timeBtn:hover {
+  background-color: #65694d;
+}
+
+/* Calendars */
+.calendar {
+  display: block;
+  margin: 20px auto;
+  width: fit-content;
+}
+
+.calendar th:first-of-type {
+  text-align: center;
+}
+
+.calendar th {
+  background-color: #E5E8D5;
+}
+
+.calendar th, .calendar td {
+  padding: 5px 10px;
+}
+
+.calendar td {
+  border-left: solid 1px #E5E8D5;
+  border-right: solid 1px #E5E8D5;
+}
+
+.timeBtn.chosenTime {
+  background-color: white;
+  border: solid 2px #A4AA84;
+  color: #A4AA84;
 }
 
 /* Index */
@@ -104,3 +147,4 @@ nav {
 .activeBar {
   background-color: #258cfb;
 }
+
