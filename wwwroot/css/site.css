@@ -103,11 +103,27 @@ nav {
   font-size: 0.8em;
   font-weight: 600;
   color: red;
+  background-color: transparent;
+  border: none;
+  text-decoration: underline;
 }
 
 .adminBtn {
   font-size: 0.9em;
-  padding: 5px;
+  padding: 10px;
+  background-color: transparent;
+  border: none;
+  text-decoration: underline;
+  color: black;
+}
+
+form:has(.adminBtn ){
+  position: relative;
+  width: fit-content;
+}
+
+.adminDeleteBtn {
+  color: red;
 }
 
 /* Tables */
@@ -208,4 +224,19 @@ nav {
 
 #filterForm > div {
   margin-right: 20px;
+}
+
+/* Booking details */
+li:has(form) {
+  display: flex;
+}
+
+form:has(.smallDeleteBtn) {
+  width: fit-content;
+  position: relative;
+}
+
+.titleContainer div {
+  display: flex;
+  align-items: center;
 }

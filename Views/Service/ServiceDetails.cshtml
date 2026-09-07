@@ -12,9 +12,14 @@
         <h1>@Model.Title</h1>
 
         <div>
+            @* Delete Button *@
+            <form method="post" asp-action="DeleteService">
+                <input type="hidden" name="id" value="@Model.Id" />
+                <input type="submit" value="Ta bort" class="adminBtn adminDeleteBtn" />
+            </form>
+
+            <a asp-action="AddOfferedService" asp-route-id="@Model.Id" asp-route-title="@Model.Title" class="adminBtn">Lägg till frisör</a>
             <a asp-action="UpdateService" asp-route-id="@Model.Id" class="adminBtn">Redigera</a>
-            <a asp-action="AddOfferedService" class="adminBtn">Lägg till frisör</a>
-            <button class="adminBtn">Ta bort</button>
         </div>
     </div>
 
@@ -36,7 +41,12 @@
         @foreach(var service in Model.OfferedServices) {
             <li>
                 @service.Hairdresser?.Fname @service.Hairdresser?.Lname
-                <a asp-action="DeleteOfferedService" class="smallDeleteBtn">Ta bort</a>
+
+                <form method="post" asp-action="DeleteOfferedService">
+                    <input type="hidden" name="hairdresserId" value="@service.HairdresserId" />
+                    <input type="hidden" name="serviceId" value="@service.ServiceId" />
+                    <input type="submit" value="Ta bort" class="smallDeleteBtn" />
+                </form>
             </li>
         }
     </ul>

@@ -7,17 +7,22 @@
 }
 
 <section>
-    <h1>Lägg till frisör som erbjuder @ViewBag.ServiceTitle</h1>
+    <h1>@ViewBag.ServiceTitle</h1>
+    <p><strong>Lägg till frisör som erbjuder tjänsten.</strong></p>
+
     <form asp-action="AddOfferedService" method="post">
 
         <!-- Hidden service Id -->
         <input type="hidden" asp-for="ServiceId" value="@ViewBag.ServiceId"/>
 
-        <br />
-        <label asp-for="HairdresserId"></label>
-        <select asp-for="HairdresserId" asp-items="ViewBag.Hairdresser"></select>
-        <span asp-validation-for="HairdresserId"></span>
-        <br />
-        <input type="submit" value="Lägg till" />
+        <div>
+            <label asp-for="HairdresserId">Frisör</label>
+            <select asp-for="HairdresserId" asp-items="ViewBag.Hairdresser">
+                <option value="" selected disabled>Välj</option>
+            </select>
+            <span asp-validation-for="HairdresserId"></span>
+        </div>
+
+        <input type="submit" value="Uppdatera" class="beigeBtn" />
     </form>
 </section>

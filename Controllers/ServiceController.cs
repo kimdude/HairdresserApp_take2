@@ -71,13 +71,16 @@ public class ServiceController : Controller
     }
 
     //Return view to add available service
-    public IActionResult AddOfferedService(int serviceId, string serviceTitle)
+    public async Task<IActionResult> AddOfferedService(int id, string title)
     {
 
-        ViewData["Hairdresser"] = new SelectList(_context.Hairdressers, "Id", "Fname");
-        ViewBag.ServiceId = serviceId;
-        ViewBag.ServiceTitle = serviceTitle; 
+        //Getting hairdresser that don't already offer the service
+        List<Hairdresser> hairdressers = await _context.Hairdressers!.Where(hairdresser => !hairdresser.OfferedServices.Any(offeredService => offeredService.ServiceId == id)).ToListAsync();
 
+        ViewData["Hairdresser"] = new SelectList(hairdressers, "Id", "Fname");
+        ViewBag.ServiceId = id;
+        ViewBag.ServiceTitle = title; 
+ 
         return View();
     }
 
@@ -86,7 +89,6 @@ public class ServiceController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddOfferedService([Bind("HairdresserId,ServiceId")] OfferedService offeredService)
     {
-        Console.WriteLine(offeredService.ServiceId);
         if (ModelState.IsValid)
         {
             _context.Add(offeredService);
@@ -146,7 +148,7 @@ public class ServiceController : Controller
 
     /* DELETE */
     //Deleting service
-    [HttpPost, ActionName("Delete")]
+    [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteService(int id)
     {
@@ -158,23 +160,23 @@ public class ServiceController : Controller
         }
 
         await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction(nameof(GetServices));
     }
 
     //Delete available service
-    [HttpPost, ActionName("Delete")]
+    [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteOfferedService(int? id)
+    public async Task<IActionResult> DeleteOfferedService(int hairdresserId, int serviceId)
     {
-        var offeredService = await _context.OfferedServices!.FindAsync(id);
+        var offeredService = await _context.OfferedServices!.FindAsync(hairdresserId, serviceId);
 
         if(offeredService != null)
         {
             _context.OfferedServices.Remove(offeredService);
+            await _context.SaveChangesAsync();
         }
 
-        await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction(nameof(GetServices));
     }
 
     //Function to validate hairdresser ID

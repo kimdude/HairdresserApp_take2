@@ -29,7 +29,7 @@ public class BookingController : Controller
     public async Task<IActionResult> GetBookings()
     {
         //Getting all bookings
-        List<Booking> bookings = await _context.Booking.Where(booking => booking.DateAndTime == DateAndTime.Today).Include(booked => booked.BookedServices).ThenInclude(service => service.Service).Include(booked => booked.Hairdresser).Include(booked => booked.Customer).OrderBy(booking => booking.DateAndTime).ToListAsync();
+        List<Booking> bookings = await _context.Booking.Where(booking => booking.DateAndTime >= DateTime.Today && booking.DateAndTime < DateTime.Today.AddDays(1)).Include(booked => booked.BookedServices).ThenInclude(service => service.Service).Include(booked => booked.Hairdresser).Include(booked => booked.Customer).OrderBy(booking => booking.DateAndTime).ToListAsync();
         ViewBag.Hairdressers = new SelectList(_context.Hairdressers, "Id", "Fname");
 
         return View(bookings);
