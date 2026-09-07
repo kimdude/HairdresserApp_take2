@@ -1,37 +1,76 @@
+@using System.Globalization
 @model IEnumerable<HairdresserApp.Models.Booking>
 @{
-    /* View over services */
-
     ViewData[index: "Title"] = "Bokningar";
 }
 
 <section>
-    <h1>Alla bokningar</h1>
+    <h1>Bokningar</h1>
 
-    <table>
+    @* Filter *@
+    <form asp-action="GetBookings" method="post" id="filterForm">
+        @Html.AntiForgeryToken()
+        
+        @* Hairdresser selection *@
+        <div>
+            <label for="hairdresser">Frisör: </label>
+            <select id="hairdresser" name="hairdresser" asp-items="ViewBag.Hairdressers">
+                <option value="">Alla</option>
+            </select>
+        </div>
+
+        @* Timeframe selection *@
+        <div>
+            <label>
+                <input type="radio" name="timeframe" value="today" checked />
+                Idag
+            </label>
+
+            <label>
+                <input type="radio" name="timeframe" value="week" />
+                Veckan
+            </label>
+        </div>
+
+        <button type="submit">Filtrera</button>
+    </form>
+
+    @* Bookings overview *@
+    <table class="calendar allBookings">
         <thead>
             <tr>
-                <td>Datum</td>
-                <td>Tid</td>
-                <td>Kund</td>
-                <td>Tjänst</td>
-                <td>Frisör</td>
-                <td>Pris</td>
+                <th>Datum</th>
+                <th>Tid</th>
+                <th>Kund</th>
+                <th>Tjänst</th>
+                <th>Frisör</th>
+                <th>Pris</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
-            @foreach(Booking booking in Model) {
-            <tr>
-                <td>@booking.DateAndTime</td>
-                <td>@booking.DateAndTime</td>
-                <td>@booking.Customer?.Fname @booking.Customer?.Lname</td>
-                <td>@foreach(BookedService bookedService in booking.BookedServices) {
-                        @bookedService.Service?.Title
-                    }  
-                </td>
-                <td>@booking.Hairdresser?.Fname @booking.Hairdresser?.Lname</td>
-                <td>@booking.TotalCost</td>
-            </tr>
+            @if(Model.Count() == 0) {
+                <tr><td colspan="7">Inga bokningar</td></tr>
+            } else {
+                @foreach(Booking booking in Model) {
+                <tr>
+                    <td>@booking.DateAndTime.ToString("ddd dd'/'MM", new CultureInfo("sv-EU"))</td>
+                    <td>@booking.DateAndTime.ToString("HH:mm")</td>
+                    <td>@booking.Customer?.Fname @booking.Customer?.Lname</td>
+                    <td>@foreach(BookedService bookedService in booking.BookedServices) {
+                            @bookedService.Service?.Title
+                        }  
+                    </td>
+                    <td>@booking.Hairdresser?.Fname @booking.Hairdresser?.Lname</td>
+                    <td>@booking.TotalCost</td>
+                    <td>
+                        <form asp-action="DeleteBooking" method="post">
+                            <input type="hidden" name="id" value="@booking.Id" />
+                            <button type="submit" class="deleteBtn">Avboka</button>
+                        </form>
+                    </td>
+                </tr>
+                }
             }
         </tbody>
     </table>

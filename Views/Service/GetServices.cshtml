@@ -3,72 +3,43 @@
 @{
     /* View to add service */
 
-    ViewData[index: "Title"] = "Lägg till tjänst";
+    ViewData[index: "Title"] = "Tjänster";
 }
 
 <section>
-    
-    <div>
-        <h1>Samtliga tjänster</h1>
+    <h1>Alla tjänster</h1>
 
-        <!-- Adding new service -->
-        <a asp-action="CreateService">Ny tjänst</a>
-    </div>
-
-    <div>
-    @foreach(var service in Model) {
-        <article>
-
-            <!-- Heading -->
-            <div>
-                <!-- Title -->
-                <div>
-                    <h2>
-                        @service.Title
-                    </h2>
-                    <p>
-                        @service.Description
-                    </p>
-                </div>
-
-                <!-- Actions -->
-                <div>
-                    <a asp-action="UpdateService">Redigera tjänsten</a>
-                    <a asp-action="AddOfferedService" asp-route-serviceId="@service.Id" asp-route-serviceTitle="@service.Title">Lägg till frisör</a>
-                    <a asp-action="DeleteService">Radera tjänsten</a>
-                </div>
-            </div>
-
-            <!-- Details -->
-            <div>
-                <p>
-                    Tid: @service.Duration
-                </p>
-                <p>
-                    Pris: @service.Price
-                </p>
-            </div>
-
-            <!-- Offered by -->
-            <div>
-                <h3>Erbjuds av:</h3>
-                @if(service.OfferedServices.Any())
-                {
-                <ul>
-                    @foreach(var offeredService in service.OfferedServices) {
-                        <li>
-                            @offeredService.Hairdresser?.Fname @offeredService.Hairdresser?.Lname
-                            <a asp-action="DeleteOfferedService">Ta bort från tjänsten</a>
-                        </li>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Tjänst</th>
+                <th>Tid</th>
+                <th>Pris</th>
+                <th>Erbjuds</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var service in Model) {
+                <tr>
+                    <td><a asp-action="ServiceDetails" asp-route-id="@service.Id">@service.Title</a></td>
+                    <td><a asp-action="ServiceDetails" asp-route-id="@service.Id">@service.Duration</a></td>
+                    <td><a asp-action="ServiceDetails" asp-route-id="@service.Id">@service.Price</a></td>
+                    @if(service.OfferedServices.Any()) {
+                        <td class="availableService">
+                            <a asp-action="ServiceDetails" asp-route-id="@service.Id">Erbjuds</a>
+                        </td>
+                    } 
+                    else 
+                    {
+                        <td class="unavailableService">
+                            <a asp-action="ServiceDetails" asp-route-id="@service.Id">Erbjuds ej</a>
+                        </td>
                     }
-                </ul>
-                } 
-                else 
-                {
-                <p>Ingen frisör erbjuder denna tjänst.</p>
-                }
-            </div>
-        </article>
-    }
-    </div>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Adding new service -->
+    <a asp-action="CreateService" class="beigeBtn">Ny tjänst</a>
 </section>

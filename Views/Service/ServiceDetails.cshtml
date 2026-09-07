@@ -1,0 +1,44 @@
+@model HairdresserApp.Models.Service
+    
+@{
+    /* View to update service */
+
+    ViewData[index: "Title"] = "Om tjänsten";
+}
+
+<section>
+    
+    <div class="titleContainer">
+        <h1>@Model.Title</h1>
+
+        <div>
+            <a asp-action="UpdateService" asp-route-id="@Model.Id" class="adminBtn">Redigera</a>
+            <a asp-action="AddOfferedService" class="adminBtn">Lägg till frisör</a>
+            <button class="adminBtn">Ta bort</button>
+        </div>
+    </div>
+
+    @* Service details *@
+    <div class="serviceDetails">
+        <p>Tid: @Model.Duration</p>
+        <p>Pris: @Model.Price kr</p>
+    </div>
+
+    @* Service description *@
+    <p>@Model.Description</p>
+
+    @* Hairstylists offering *@
+    <p><strong>Erbjuds av:</strong></p>
+    @if(Model.OfferedServices.Count == 0) {
+        <p>Tjänsten erbjuds inte</p>
+    } else {
+    <ul>
+        @foreach(var service in Model.OfferedServices) {
+            <li>
+                @service.Hairdresser?.Fname @service.Hairdresser?.Lname
+                <a asp-action="DeleteOfferedService" class="smallDeleteBtn">Ta bort</a>
+            </li>
+        }
+    </ul>
+    }
+</section>

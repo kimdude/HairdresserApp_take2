@@ -31,12 +31,12 @@ public class SetupCalender
         DateTime monday = new DateTime();
 
         //If currentDay == sat or sun count days til upcoming mon
-        if(currentDay.ToString() == "Saturday")
+        if(currentDay.ToString() == "Saturday" || currentDay.ToString() == "Sunday")
         {
             //Days til next monday
             int daysTilNextMonday = 7 - ((int)currentDay + 6) % 7;
             monday = date.AddDays(daysTilNextMonday); // Adding days til next monday
-        } 
+        }
         else
         {
             //Days since last monday

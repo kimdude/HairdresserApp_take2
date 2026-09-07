@@ -12,6 +12,7 @@ public class ServiceController : Controller
 
     private readonly ApplicationDbContext _context;
 
+    //Constructor
     public ServiceController(ApplicationDbContext context)
     {
         _context = context;
@@ -35,7 +36,7 @@ public class ServiceController : Controller
             return NotFound();
         }
 
-        var service = await _context.Services!.FindAsync(id);
+        var service = await _context.Services!.Where(service => service.Id == id).Include(service => service.OfferedServices).ThenInclude(offeredService => offeredService.Hairdresser).FirstOrDefaultAsync();
 
         if(service == null)
         {
@@ -99,20 +100,24 @@ public class ServiceController : Controller
 
     /* EDIT */
     //Return view to update service
-    public IActionResult UpdateService()
+    public async Task<IActionResult> UpdateService(int id)
     {
-        return View();
+
+        //Null check
+
+        var service = await _context.Services!.Where(service => service.Id == id).Include(service => service.OfferedServices).ThenInclude(offeredService => offeredService.Hairdresser).FirstOrDefaultAsync();
+
+        //Null check
+
+        
+        return View(service);
     }
 
     //Update service
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UpdateService(int id, [Bind("Title, Description, Price, Duration")] Service service)
+    public async Task<IActionResult> UpdateService([Bind("Id, Title, Description, Price, Duration")] Service service)
     {
-        if(id != service.Id)
-        {
-            return NotFound();
-        }
 
         if(ModelState.IsValid)
         {
@@ -133,7 +138,7 @@ public class ServiceController : Controller
                 }
             }
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(GetServices));
         }
 
         return View(service);

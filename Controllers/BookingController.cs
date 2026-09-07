@@ -28,11 +28,49 @@ public class BookingController : Controller
     //Getting bookings
     public async Task<IActionResult> GetBookings()
     {
-        //  QUERY FOR HAIRDRESSER OR CUSTROMER Id
+        //Getting all bookings
+        List<Booking> bookings = await _context.Booking.Where(booking => booking.DateAndTime == DateAndTime.Today).Include(booked => booked.BookedServices).ThenInclude(service => service.Service).Include(booked => booked.Hairdresser).Include(booked => booked.Customer).OrderBy(booking => booking.DateAndTime).ToListAsync();
+        ViewBag.Hairdressers = new SelectList(_context.Hairdressers, "Id", "Fname");
 
+        return View(bookings);
+    }
 
-        // Getting all bookings
-        var bookings = await _context.Booking.Include(booked => booked.BookedServices).ThenInclude(service => service.Service).Include(booked => booked.Hairdresser).Include(booked => booked.Customer).ToListAsync();
+    //Filtering bookings
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> GetBookings(int hairdresser, string timeframe)
+    {
+        List<Booking> bookings = [];
+
+        //Getting next weeks days
+        var calendar = new SetupCalender();
+        List<DateTime> weekDays = calendar.GetWeekdays(DateTime.Now);
+        DateTime startDate = weekDays.First().Date;
+        DateTime endDate = weekDays.Last().Date.AddDays(1);
+
+        DateTime todayDate = DateTime.Today;
+        DateTime tomorrowsDate = todayDate.AddDays(1);
+
+        if(timeframe == "week" && hairdresser == 0)
+        {
+            //Filtering next week with all hairdressers
+            bookings = await _context.Booking.Where(booking => booking.DateAndTime >= startDate && booking.DateAndTime <= endDate).Include(booked => booked.BookedServices).ThenInclude(service => service.Service).Include(booked => booked.Hairdresser).Include(booked => booked.Customer).OrderBy(booking => booking.DateAndTime).ToListAsync();
+        } 
+        else if (timeframe == "week" && hairdresser != 0) 
+        {
+            //Filtering next week by hairdresser
+            bookings = await _context.Booking.Where(booking => booking.DateAndTime >= startDate && booking.DateAndTime <= endDate && booking.HairdresserId == hairdresser).Include(booked => booked.BookedServices).ThenInclude(service => service.Service).Include(booked => booked.Hairdresser).Include(booked => booked.Customer).OrderBy(booking => booking.DateAndTime).ToListAsync();  
+        } else if(timeframe == "today" && hairdresser != 0)
+        {
+            //Filtering todays bookings by hairdresser
+            bookings = await _context.Booking.Where(booking => booking.DateAndTime >= todayDate && booking.DateAndTime < tomorrowsDate && booking.HairdresserId == hairdresser).Include(booked => booked.BookedServices).ThenInclude(service => service.Service).Include(booked => booked.Hairdresser).Include(booked => booked.Customer).OrderBy(booking => booking.DateAndTime).ToListAsync();  
+
+        } else
+        {
+            bookings = await _context.Booking.Where(booking => booking.DateAndTime >= todayDate && booking.DateAndTime < tomorrowsDate).Include(booked => booked.BookedServices).ThenInclude(service => service.Service).Include(booked => booked.Hairdresser).Include(booked => booked.Customer).OrderBy(booking => booking.DateAndTime).ToListAsync();
+        }
+
+        ViewBag.Hairdressers = new SelectList(_context.Hairdressers, "Id", "Fname");
         
         return View(bookings);
     }
@@ -121,13 +159,6 @@ public class BookingController : Controller
         } 
         else if(bookingVm.BookingStep == 2)
         {
-            
-            //Get button data & value
-
-
-            //Store selectedDateTime
-
-
             //Set step
             bookingVm.BookingStep = 3;
 
@@ -232,7 +263,7 @@ public class BookingController : Controller
 
     /* DELETE */
     //Delete booking
-    [HttpPost, ActionName("Delete")]
+    [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteBooking(int id)
     {
@@ -243,7 +274,7 @@ public class BookingController : Controller
         }
 
         await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction(nameof(GetBookings));
     }
 
 }

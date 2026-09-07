@@ -43,22 +43,33 @@ nav {
 }
 
 /* Buttons */
-.timeBtn, .beigeBtn {
+.timeBtn, .beigeBtn, .deleteBtn, #filterForm button {
   display: block;
   width: fit-content;
-  padding: 10px 20px;
   border: none;
   border-radius: 10px;
 }
 
-.beigeBtn {
-  margin: 20px auto 0px auto;
+.timeBtn, .beigeBtn {
+  padding: 10px 20px;
+}
+
+.deleteBtn, #filterForm button {
+  font-size: 0.8em;
+  padding: 5px 10px;
+}
+
+.beigeBtn, #filterForm button {
   color: white;
   text-decoration: none;
   background-color: #CAAB97;
 }
 
-.beigeBtn:hover {
+.beigeBtn {
+  margin: 20px auto 0px auto;
+}
+
+.beigeBtn:hover, #filterForm button:hover {
   background-color: #a88771;
 }
 
@@ -73,8 +84,34 @@ nav {
   background-color: #65694d;
 }
 
-/* Calendars */
-.calendar {
+.deleteBtn {
+  font-size: 0.8em;
+  color: white;
+  background-color: rgb(228, 77, 77);
+}
+
+.deleteBtn:hover {
+  background-color: rgb(168, 50, 50);
+}
+
+#filterForm button {
+  font-weight: 600;
+}
+
+.smallDeleteBtn {
+  margin-left: 10px;
+  font-size: 0.8em;
+  font-weight: 600;
+  color: red;
+}
+
+.adminBtn {
+  font-size: 0.9em;
+  padding: 5px;
+}
+
+/* Tables */
+.calendar, .table {
   display: block;
   margin: 20px auto;
   width: fit-content;
@@ -84,7 +121,7 @@ nav {
   text-align: center;
 }
 
-.calendar th {
+.calendar th, .table th {
   background-color: #E5E8D5;
 }
 
@@ -92,7 +129,7 @@ nav {
   padding: 5px 10px;
 }
 
-.calendar td {
+.calendar td, .table td {
   border-left: solid 1px #E5E8D5;
   border-right: solid 1px #E5E8D5;
 }
@@ -101,6 +138,22 @@ nav {
   background-color: white;
   border: solid 2px #A4AA84;
   color: #A4AA84;
+}
+
+.table tr:hover, .allBookings tr:hover {
+  background-color: #e8e9e6;
+}
+
+.table td {
+  padding: 0px;
+}
+
+.table a {
+  color: black;
+  text-decoration: none;
+  width: 100%;
+  height: 100%;
+  padding: 5px 10px;
 }
 
 /* Index */
@@ -148,3 +201,11 @@ nav {
   background-color: #258cfb;
 }
 
+/* All bookings */
+#filterForm {
+  display: flex;
+}
+
+#filterForm > div {
+  margin-right: 20px;
+}

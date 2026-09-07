@@ -1,4 +1,4 @@
-@model IEnumerable<HairdresserApp.Models.Service>
+@model HairdresserApp.Models.Service
     
 @{
     /* View to update service */
@@ -7,5 +7,38 @@
 }
 
 <section>
-    <h1>Uppdatera tjänst</h1>
+    <h1>Uppdatera @Model.Title</h1>
+
+    <form asp-action="UpdateService" method="post">
+
+        <div asp-validation-summary="ModelOnly"></div>
+        <input type="hidden" asp-for="Id" />
+         
+        <div>
+            <label asp-for="Title">Titel: </label>
+            <input asp-for="Title" value="@Model.Title" />
+            <span asp-validation-for="Title"></span>
+        </div>
+
+        <div>
+            <label asp-for="Description">Beskrivning: </label>
+            <input asp-for="Description" value="@Model.Description" />
+            <span asp-validation-for="Description"></span>
+        </div>
+
+        <div>
+            <label asp-for="Price">Pris: </label>
+            <input asp-for="Price" value="@Model.Price" />
+            <span asp-validation-for="Price"></span>
+ 
+            <label asp-for="Duration">Tid: </label>
+            <input asp-for="Duration" value="@Model.Duration" />
+            <span asp-validation-for="Duration"></span>
+        </div>
+
+        <div>
+        </div>
+
+        <input type="submit" value="Uppdatera" class="beigeBtn" />
+    </form>
 </section>
