@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HairdresserApp.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class HairdresserApp : Migration
+    public partial class AddHairdresserUserRelationship : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -34,11 +34,17 @@ namespace HairdresserApp.Data.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Fname = table.Column<string>(type: "TEXT", maxLength: 30, nullable: false),
                     Lname = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
-                    UserId = table.Column<string>(type: "TEXT", nullable: true)
+                    UserId = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Hairdressers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Hairdressers_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -152,6 +158,12 @@ namespace HairdresserApp.Data.Migrations
                 name: "IX_Customers_Email",
                 table: "Customers",
                 column: "Email",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Hairdressers_UserId",
+                table: "Hairdressers",
+                column: "UserId",
                 unique: true);
 
             migrationBuilder.CreateIndex(

@@ -1,6 +1,7 @@
 /* Model for Hairdresser table */
 
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
 
 namespace HairdresserApp.Models;
 
@@ -17,7 +18,10 @@ public class Hairdresser
     [MaxLength(40)]
     public required string Lname { get; set; }
 
-    public string? UserId { get; set; }
+    [Required]
+    public string UserId { get; set; } = null!;
+
+    public IdentityUser User { get; set; } = null!;
 
     //Dependants
     public ICollection<OfferedService> OfferedServices { get; } = new List<OfferedService>();

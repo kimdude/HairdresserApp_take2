@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HairdresserApp.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260412133911_HairdresserApp")]
-    partial class HairdresserApp
+    [Migration("20260908113934_AddHairdresserUserRelationship")]
+    partial class AddHairdresserUserRelationship
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,7 +20,7 @@ namespace HairdresserApp.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.5");
 
-            modelBuilder.Entity("HairdresserApp.BookedService", b =>
+            modelBuilder.Entity("HairdresserApp.Models.BookedService", b =>
                 {
                     b.Property<int>("BookingId")
                         .HasColumnType("INTEGER");
@@ -35,7 +35,7 @@ namespace HairdresserApp.Data.Migrations
                     b.ToTable("BookedServices");
                 });
 
-            modelBuilder.Entity("HairdresserApp.Booking", b =>
+            modelBuilder.Entity("HairdresserApp.Models.Booking", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -62,7 +62,7 @@ namespace HairdresserApp.Data.Migrations
                     b.ToTable("Booking");
                 });
 
-            modelBuilder.Entity("HairdresserApp.Customer", b =>
+            modelBuilder.Entity("HairdresserApp.Models.Customer", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -90,7 +90,7 @@ namespace HairdresserApp.Data.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("HairdresserApp.Hairdresser", b =>
+            modelBuilder.Entity("HairdresserApp.Models.Hairdresser", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -107,14 +107,18 @@ namespace HairdresserApp.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
                     b.ToTable("Hairdressers");
                 });
 
-            modelBuilder.Entity("HairdresserApp.OfferedService", b =>
+            modelBuilder.Entity("HairdresserApp.Models.OfferedService", b =>
                 {
                     b.Property<int>("HairdresserId")
                         .HasColumnType("INTEGER");
@@ -129,7 +133,7 @@ namespace HairdresserApp.Data.Migrations
                     b.ToTable("OfferedServices");
                 });
 
-            modelBuilder.Entity("HairdresserApp.Service", b =>
+            modelBuilder.Entity("HairdresserApp.Models.Service", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -351,15 +355,15 @@ namespace HairdresserApp.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("HairdresserApp.BookedService", b =>
+            modelBuilder.Entity("HairdresserApp.Models.BookedService", b =>
                 {
-                    b.HasOne("HairdresserApp.Booking", "Booking")
+                    b.HasOne("HairdresserApp.Models.Booking", "Booking")
                         .WithMany("BookedServices")
                         .HasForeignKey("BookingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HairdresserApp.Service", "Service")
+                    b.HasOne("HairdresserApp.Models.Service", "Service")
                         .WithMany("BookedServices")
                         .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -370,15 +374,15 @@ namespace HairdresserApp.Data.Migrations
                     b.Navigation("Service");
                 });
 
-            modelBuilder.Entity("HairdresserApp.Booking", b =>
+            modelBuilder.Entity("HairdresserApp.Models.Booking", b =>
                 {
-                    b.HasOne("HairdresserApp.Customer", "Customer")
+                    b.HasOne("HairdresserApp.Models.Customer", "Customer")
                         .WithMany("Bookings")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HairdresserApp.Hairdresser", "Hairdresser")
+                    b.HasOne("HairdresserApp.Models.Hairdresser", "Hairdresser")
                         .WithMany("Bookings")
                         .HasForeignKey("HairdresserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -389,15 +393,26 @@ namespace HairdresserApp.Data.Migrations
                     b.Navigation("Hairdresser");
                 });
 
-            modelBuilder.Entity("HairdresserApp.OfferedService", b =>
+            modelBuilder.Entity("HairdresserApp.Models.Hairdresser", b =>
                 {
-                    b.HasOne("HairdresserApp.Hairdresser", "Hairdresser")
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithOne()
+                        .HasForeignKey("HairdresserApp.Models.Hairdresser", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("HairdresserApp.Models.OfferedService", b =>
+                {
+                    b.HasOne("HairdresserApp.Models.Hairdresser", "Hairdresser")
                         .WithMany("OfferedServices")
                         .HasForeignKey("HairdresserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HairdresserApp.Service", "Service")
+                    b.HasOne("HairdresserApp.Models.Service", "Service")
                         .WithMany("OfferedServices")
                         .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -459,24 +474,24 @@ namespace HairdresserApp.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("HairdresserApp.Booking", b =>
+            modelBuilder.Entity("HairdresserApp.Models.Booking", b =>
                 {
                     b.Navigation("BookedServices");
                 });
 
-            modelBuilder.Entity("HairdresserApp.Customer", b =>
+            modelBuilder.Entity("HairdresserApp.Models.Customer", b =>
                 {
                     b.Navigation("Bookings");
                 });
 
-            modelBuilder.Entity("HairdresserApp.Hairdresser", b =>
+            modelBuilder.Entity("HairdresserApp.Models.Hairdresser", b =>
                 {
                     b.Navigation("Bookings");
 
                     b.Navigation("OfferedServices");
                 });
 
-            modelBuilder.Entity("HairdresserApp.Service", b =>
+            modelBuilder.Entity("HairdresserApp.Models.Service", b =>
                 {
                     b.Navigation("BookedServices");
 
