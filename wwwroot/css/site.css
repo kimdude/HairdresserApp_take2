@@ -240,3 +240,12 @@ form:has(.smallDeleteBtn) {
   display: flex;
   align-items: center;
 }
+
+/* Hairdressera */
+.userArticle h2 {
+  font-size: 1.2em;
+}
+
+.userArticle {
+  margin: 10px 0px;
+}

@@ -8,6 +8,7 @@ using SQLitePCL;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace HairdresserApp.Controllers;
 
@@ -29,7 +30,7 @@ public class HairdresserController : Controller
     public async Task<IActionResult> GetHairdressers()
     {
         // Getting all hairdressers
-        var hairdressers = await _context.Hairdressers!.ToListAsync();
+        var hairdressers = await _context.Hairdressers!.Include(hairdresser => hairdresser.User).ToListAsync();
         
         return View(hairdressers);
     }
@@ -53,71 +54,54 @@ public class HairdresserController : Controller
         return View(hairdresser);
     }
 
-    /* CREATE */
-    //Returning hairdresser form
-    public async Task<IActionResult> CreateHairdresser()
-    {
-        return View();
-    }
-
-    //Add hairdresser
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreateHairdresser([Bind("Fname,Lname")] Hairdresser hairdresser)
-    {
-        if (ModelState.IsValid)
-        {
-            //Adding Current UserId
-            hairdresser.UserId = _userManager.GetUserId(User);
-            
-            _context.Add(hairdresser);
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        return View(hairdresser); //THROWS ERROR COULDN'T FIND VIEW
-    }
-
     /* EDIT */
-    //Update hairdresser
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UpdateHairdresser(int id, [Bind("Id, Fname,Lname")] Hairdresser hairdresser)
+    //Returning view with update form
+    public async Task<IActionResult> UpdateHairdresser(int id)
     {
-        if(id != hairdresser.Id)
+        Hairdresser? hairdresser = await _context.Hairdressers!.FindAsync(id);
+
+        if(hairdresser == null)
         {
             return NotFound();
-        }
-
-        if(ModelState.IsValid)
-        {
-            try
-            {
-                _context.Update(hairdresser);
-                await _context.SaveChangesAsync();
-            } 
-            catch(DbUpdateConcurrencyException)
-            {
-                if(!HairdresserExists(hairdresser.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return RedirectToAction(nameof(Index));
         }
 
         return View(hairdresser);
     }
 
+    //Update hairdresser
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdateHairdresser([Bind("Id, Fname, Lname")] HairdresserViewModel hairdresserVm)
+    {
+        if(ModelState.IsValid)
+        {
+            if(ModelState.IsValid)
+            {
+
+                //Checking for hairdresser
+                Hairdresser? existingHairdresser = await _context.Hairdressers!.FirstOrDefaultAsync(hairdresser => hairdresser.Id == hairdresserVm.Id);
+
+                if(existingHairdresser == null)
+                {
+                    return NotFound();
+                }
+
+                //Updating only fname and lname
+                existingHairdresser.Fname = hairdresserVm.Fname!;
+                existingHairdresser.Lname = hairdresserVm.Lname!;
+
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(GetHairdressers));
+        }
+
+        return View(hairdresserVm);
+    }
+
     /* DELETE */
     //Delete hairdresser
-    [HttpPost, ActionName("Delete")]
+    [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteHairdresser(int? id)
     {
@@ -125,11 +109,22 @@ public class HairdresserController : Controller
 
         if(hairdresser != null)
         {
+            //Finding user
+            IdentityUser? user = await _userManager.FindByIdAsync(hairdresser.UserId);
+            
+            //Deleting hairdresser
             _context.Hairdressers.Remove(hairdresser);
+            await _context.SaveChangesAsync();
+
+            //Deleting user
+            if(user != null)
+            {
+                await _userManager.DeleteAsync(user);
+            }
+
         }
 
-        await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction(nameof(GetHairdressers));
     }
 
     //Function to validate hairdresser ID

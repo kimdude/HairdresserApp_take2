@@ -9,13 +9,21 @@
 <section>
     <h1>Frisörer</h1>
 
-    <ul>
     @foreach(var hairdresser in Model) {
-        <li>
-            @hairdresser.Fname
-        </li>
-    }
-    </ul>
+        <article class="userArticle">
+            <h2>@hairdresser.Fname @hairdresser.Lname</h2>
+            <p>@hairdresser.User.Email</p>
 
-    <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Ny frisör</a>
+            <div>
+                <a asp-action="UpdateHairdresser" asp-route-id="@hairdresser.Id">Redigera</a>
+
+                <form asp-action="DeleteHairdresser" method="post">
+                    <input type="hidden" name="id" value="@hairdresser.Id" />
+                    <input type="submit" value="Ta bort" />
+                </form>
+            </div>
+        </article>
+    }
+
+    <a class="beigeBtn" asp-area="Identity" asp-page="/Account/Register">Ny frisör</a>
 </section>

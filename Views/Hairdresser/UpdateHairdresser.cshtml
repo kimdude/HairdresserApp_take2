@@ -1,0 +1,31 @@
+@model HairdresserApp.Models.Hairdresser
+    
+@{
+    /* View to update service */
+
+    ViewData[index: "Title"] = "Uppdatera frisör";
+}
+
+<section>
+    <h1>Uppdatera @Model.Fname</h1>
+
+    <form asp-action="UpdateHairdresser" method="post">
+
+        <div asp-validation-summary="ModelOnly"></div>
+        <input type="hidden" asp-for="Id" />
+         
+        <div>
+            <label asp-for="Fname">Förnamn: </label>
+            <input asp-for="Fname" value="@Model.Fname" />
+            <span asp-validation-for="Fname"></span>
+        </div>
+
+        <div>
+            <label asp-for="Lname">Efternamn: </label>
+            <input asp-for="Lname" value="@Model.Lname" />
+            <span asp-validation-for="Lname"></span>
+        </div>
+
+        <input type="submit" value="Uppdatera" class="beigeBtn" />
+    </form>
+</section>
