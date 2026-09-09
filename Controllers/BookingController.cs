@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using HairdresserApp.Services;
+using Microsoft.CodeAnalysis.Elfie.Serialization;
+using HairdresserApp.Interfaces;
+using System.Net.Mail;
 
 namespace HairdresserApp.Controllers;
 
@@ -17,11 +20,13 @@ public class BookingController : Controller
 {
 
     private readonly ApplicationDbContext _context;
+    private readonly IEmailSender _emailSender;
 
     //Constructor
-    public BookingController(ApplicationDbContext context)
+    public BookingController(ApplicationDbContext context, IEmailSender emailSender)
     {
         _context = context;
+        _emailSender = emailSender;
     }
 
     /* GET */
@@ -254,11 +259,27 @@ public class BookingController : Controller
 
                 _context.BookedServices!.Add(bookedService);
                 await _context.SaveChangesAsync();
+
+                //Check if everything succeeded
+                
+            
+                
+                //Sending email
+                await _emailSender.SendEmailAsync(bookingVm.Email!, bookingVm.SelectedDateAndTime, bookingVm.ServiceTitle!, bookingVm.ServicePrice);
+
+                return View(nameof(ConfirmBooking), bookingVm);
             }
             
         }
 
         return View(bookingVm);
+    }
+
+    /* CONFIRMATION */
+    public IActionResult ConfirmBooking()
+    {
+
+        return View();
     }
 
     /* DELETE */
