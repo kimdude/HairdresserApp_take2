@@ -64,10 +64,15 @@
                     <td>@booking.Hairdresser?.Fname @booking.Hairdresser?.Lname</td>
                     <td>@booking.TotalCost</td>
                     <td>
+
+                        @* Delete btn *@
                         <form asp-action="DeleteBooking" method="post">
                             <input type="hidden" name="id" value="@booking.Id" />
                             <button type="submit" class="deleteBtn">Avboka</button>
                         </form>
+
+                        @* Edit btn *@
+                        <a asp-action="UpdateBooking" asp-route-id="@booking.Id">Omboka</a>
                     </td>
                 </tr>
                 }

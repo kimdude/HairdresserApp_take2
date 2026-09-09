@@ -1,0 +1,89 @@
+@using System.Globalization
+@model HairdresserApp.ViewModels.UpdateBookingViewModel
+
+@{
+    /* View to update service */
+    ViewData[index: "Title"] = "Omboka";
+}
+
+<section>
+    <h1>Omboka @Model.ServiceTitle</h1>
+
+    <form asp-action="UpdateBooking" method="post">
+
+        <div asp-validation-summary="ModelOnly"></div>
+
+        <input type="hidden" asp-for="BookingId" value="@Model.BookingId"/>
+        <input type="hidden" asp-for="BookingStep" value="@Model.BookingStep"/>
+        <input type="hidden" asp-for="ServiceTitle" value="@Model.ServiceTitle"/>
+        <input type="hidden" asp-for="ServicePrice" value="@Model.ServicePrice"/>
+        <input type="hidden" asp-for="Email" value="@Model.Email"/>
+         
+        <!-- Hidden booking step -->
+        <input type="hidden" name="BookingStep" value="@Model.BookingStep"/>
+
+        @if(Model.BookingStep == 1) 
+        {
+            <input type="hidden" asp-for="SelectedDateAndTime" value="@Model.SelectedDateAndTime"/>
+
+            @* Hairdresser selection *@
+            <div>
+                <label asp-for="SelectedHairdresserId"></label>
+                <select asp-for="SelectedHairdresserId" asp-items="Model.Hairdressers">
+                </select>
+                <span asp-validation-for="SelectedHairdresserId"></span>
+            </div>
+
+            <button class="beigeBtn">Nästa</button>
+
+        } 
+        else if(Model.BookingStep == 2) 
+        {
+            <input type="hidden" asp-for="SelectedHairdresserId" value="@Model.SelectedHairdresserId"/>
+
+            @* Time and date selection *@
+            <table class="calendar">
+                <thead>
+                    <tr>
+                        <th colspan="5">Vecka @ViewBag.Week</th>
+                    </tr>
+                    <tr>
+                        @foreach(DateTime day in ViewBag.Day) {
+                        <th scope="col">@day.ToString("ddd d'/'M", new CultureInfo("sv-SE"))</th>
+                        }
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach(string hour in ViewBag.Hours) {
+                    <tr>
+                        @foreach(DateTime day in ViewBag.Day) {
+                            DateTime selectedTime = day.Date.Add(TimeSpan.Parse(hour)); //Adding time to date object
+
+                            List<DateTime> bookedHours = ViewBag.BookedHours;
+                            bool unavailable = bookedHours.Any(booking => booking == selectedTime); //Checking if datetime already is booked
+
+                            @if(selectedTime == Model.SelectedDateAndTime) {
+                                <td><button class="timeBtn chosenTime" name="SelectedDateAndTime" value="@selectedTime">@hour</button></td>
+                            }
+                            else if(selectedTime < DateTime.Now || unavailable) { 
+                                <td>Ej tillgänglig</td>
+                            }
+                            else {
+                                <td><button class="timeBtn" name="SelectedDateAndTime" value="@selectedTime">@hour</button></td>
+                            }
+                        }
+                    </tr>
+                    }
+                </tbody>
+            </table>
+
+        } 
+        else if(Model.BookingStep == 3) 
+        {
+            <p>Tiden har ombokats till <strong>@Model.SelectedDateAndTime.ToString("ddd dd'/'MM", new CultureInfo("sv-SE"))</strong>, klockan <strong>@Model.SelectedDateAndTime.ToString("HH:mm")</strong>.</p>
+            <p>Bekräftelse skickas till <strong>@Model.Email</strong>.</p>
+        }
+
+    </form>
+</section>

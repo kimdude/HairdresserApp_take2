@@ -282,6 +282,117 @@ public class BookingController : Controller
         return View();
     }
 
+    /* EDIT */
+    //Returning view to edit booking
+    public async Task<IActionResult> UpdateBooking(int id)
+    {
+
+        //Fetching booking
+        Booking? booking = await _context.Booking
+            .Include(booking => booking.BookedServices)
+            .ThenInclude(bookedService => bookedService.Service)
+            .Include(booking => booking.Customer)
+            .FirstOrDefaultAsync(booking => booking.Id == id);
+
+        if(booking == null)
+        {
+            return NotFound();
+        }
+
+        //Setting ViewModel
+        UpdateBookingViewModel bookingVm = new UpdateBookingViewModel();
+        bookingVm.BookingStep = 1;
+
+        bookingVm.BookingId = id;
+        bookingVm.ServiceTitle = booking.BookedServices.First().Service!.Title;
+        bookingVm.ServicePrice = booking.BookedServices.First().Service!.Price;
+
+        bookingVm.SelectedDateAndTime = booking.DateAndTime;
+
+        bookingVm.SelectedHairdresserId = booking.HairdresserId;
+        bookingVm.Hairdressers = new SelectList(_context.Hairdressers, "Id", "Fname");
+        bookingVm.Email = booking.Customer!.Email;
+
+        return View(bookingVm);
+    }
+
+    //Updating booking
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdateBooking(UpdateBookingViewModel updateBookingVm)
+    {
+
+        if(updateBookingVm.BookingStep == 1)
+        {
+
+            if(ModelState.IsValid)
+            {
+                /* Setting up calendar */
+                var calendar = new SetupCalender();
+
+                int week = calendar.GetWeek();
+                ViewBag.Week = week;
+
+                List<DateTime> weekDays = calendar.GetWeekdays(DateTime.Now);
+                ViewBag.Day = weekDays;
+
+                string[] startingHours = {"08:00", "09:00", "10:00", "11:00", "13:00", "14:00", "15:00", "16:00"};
+                ViewBag.Hours = startingHours;   
+
+                //Get datetimes of hairdresser within timerange
+                List<DateTime> bookedDates = await _context.Booking!.Where(booking => booking.HairdresserId == updateBookingVm.SelectedHairdresserId && 
+                    booking.DateAndTime >= weekDays.First().Date && //Where date is after/at startdate
+                    booking.DateAndTime <= weekDays.Last().Date.AddDays(1)) //Where date is before/at enddate
+                    .Select(booking => booking.DateAndTime) //Return date and time
+                    .ToListAsync();
+
+                ViewBag.BookedHours = bookedDates;
+
+                //Set step
+                updateBookingVm.BookingStep = 2;
+
+            } else if(updateBookingVm.BookingStep == 2)
+            {
+                //Creating select-list
+                updateBookingVm.Hairdressers = new SelectList(_context.Hairdressers, "Id", "Fname");
+            }
+
+        }
+        else if(updateBookingVm.BookingStep == 2)
+        {
+            if(ModelState.IsValid)
+            {
+
+                //Fetching booking
+                Booking? booking = await _context.Booking.FindAsync(updateBookingVm.BookingId);
+
+                if(booking == null)
+                {
+                    return NotFound();
+                }
+
+                //Updating booking times
+                booking.HairdresserId = updateBookingVm.SelectedHairdresserId;
+                booking.DateAndTime = updateBookingVm.SelectedDateAndTime;
+
+                await _context.SaveChangesAsync();                
+                
+                //Check if everything succeeded
+            
+                
+                //Sending email
+                await _emailSender.SendEmailAsync(updateBookingVm.Email!, updateBookingVm.SelectedDateAndTime, updateBookingVm.ServiceTitle!, updateBookingVm.ServicePrice);
+
+                updateBookingVm.BookingStep = 3;
+                
+            }
+            
+        }
+
+        return View(updateBookingVm);
+        
+    }
+
     /* DELETE */
     //Delete booking
     [HttpPost]
