@@ -3,6 +3,7 @@ using HairdresserApp.Models;
 using HairdresserApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HairdresserApp.Controllers;
 
@@ -20,6 +21,7 @@ public class ServiceController : Controller
 
     /* GET */
     //Getting all services with hairdressers
+    [Authorize]
     public async Task<IActionResult> GetServices()
     {
         var services = await _context.Services!.Include(service => service.OfferedServices).ThenInclude(offeredService => offeredService.Hairdresser).ToListAsync();
@@ -29,6 +31,7 @@ public class ServiceController : Controller
     }
 
     //Getting service details
+    [Authorize]
     public async Task<IActionResult> ServiceDetails(int? id)
     {
         if(id == null)
@@ -48,12 +51,14 @@ public class ServiceController : Controller
 
     /* CREATE */
     //Return form to add service
+    [Authorize]
     public IActionResult CreateService()
     {
         return View();
     }
 
     //Add service
+    [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateService([Bind("Title, Description, Price, Duration")] Service service)
@@ -71,6 +76,7 @@ public class ServiceController : Controller
     }
 
     //Return view to add available service
+    [Authorize]
     public async Task<IActionResult> AddOfferedService(int id, string title)
     {
 
@@ -85,6 +91,7 @@ public class ServiceController : Controller
     }
 
     //Add available service
+    [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddOfferedService([Bind("HairdresserId,ServiceId")] OfferedService offeredService)
@@ -102,6 +109,7 @@ public class ServiceController : Controller
 
     /* EDIT */
     //Return view to update service
+    [Authorize]
     public async Task<IActionResult> UpdateService(int id)
     {
 
@@ -116,6 +124,7 @@ public class ServiceController : Controller
     }
 
     //Update service
+    [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateService([Bind("Id, Title, Description, Price, Duration")] Service service)
@@ -148,6 +157,7 @@ public class ServiceController : Controller
 
     /* DELETE */
     //Deleting service
+    [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteService(int id)
@@ -164,6 +174,7 @@ public class ServiceController : Controller
     }
 
     //Delete available service
+    [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteOfferedService(int hairdresserId, int serviceId)

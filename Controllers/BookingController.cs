@@ -12,6 +12,7 @@ using HairdresserApp.Services;
 using Microsoft.CodeAnalysis.Elfie.Serialization;
 using HairdresserApp.Interfaces;
 using System.Net.Mail;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HairdresserApp.Controllers;
 
@@ -31,6 +32,7 @@ public class BookingController : Controller
 
     /* GET */
     //Getting bookings
+    [Authorize]
     public async Task<IActionResult> GetBookings()
     {
         //Getting all bookings
@@ -41,6 +43,7 @@ public class BookingController : Controller
     }
 
     //Filtering bookings
+    [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> GetBookings(int hairdresser, string timeframe)
@@ -81,6 +84,7 @@ public class BookingController : Controller
     }
 
     //Get specific booking
+    [Authorize]
     public async Task<IActionResult> GetBooking(int? id)
     {
         if(id == null)
@@ -284,6 +288,7 @@ public class BookingController : Controller
 
     /* EDIT */
     //Returning view to edit booking
+    [Authorize]
     public async Task<IActionResult> UpdateBooking(int id)
     {
 
@@ -317,6 +322,7 @@ public class BookingController : Controller
     }
 
     //Updating booking
+    [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateBooking(UpdateBookingViewModel updateBookingVm)
@@ -395,6 +401,7 @@ public class BookingController : Controller
 
     /* DELETE */
     //Delete booking
+    [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteBooking(int id)

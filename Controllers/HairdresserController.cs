@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HairdresserApp.Controllers;
 
@@ -27,6 +28,7 @@ public class HairdresserController : Controller
 
     /* GET */
     //Getting all hairdressers
+    [Authorize]
     public async Task<IActionResult> GetHairdressers()
     {
         // Getting all hairdressers
@@ -36,6 +38,7 @@ public class HairdresserController : Controller
     }
 
     //Getting specific hairdresser
+    [Authorize]
     public async Task<IActionResult> HairdresserDetails(int? id)
     {
         if(id == null)
@@ -56,6 +59,7 @@ public class HairdresserController : Controller
 
     /* EDIT */
     //Returning view with update form
+    [Authorize]
     public async Task<IActionResult> UpdateHairdresser(int id)
     {
         Hairdresser? hairdresser = await _context.Hairdressers!.FindAsync(id);
@@ -69,6 +73,7 @@ public class HairdresserController : Controller
     }
 
     //Update hairdresser
+    [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateHairdresser([Bind("Id, Fname, Lname")] HairdresserViewModel hairdresserVm)
@@ -101,6 +106,7 @@ public class HairdresserController : Controller
 
     /* DELETE */
     //Delete hairdresser
+    [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteHairdresser(int? id)
