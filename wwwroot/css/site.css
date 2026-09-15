@@ -43,169 +43,33 @@ nav {
 }
 
 /* Buttons */
-.timeBtn, .beigeBtn, .deleteBtn, #filterForm button {
-  display: block;
-  width: fit-content;
-  border: none;
-  border-radius: 10px;
-}
-
-.timeBtn, .beigeBtn {
-  padding: 10px 20px;
-}
-
-.deleteBtn, #filterForm button {
-  font-size: 0.8em;
-  padding: 5px 10px;
-}
-
-.beigeBtn, #filterForm button {
-  color: white;
-  text-decoration: none;
+.btn-gp-primary {
   background-color: #CAAB97;
 }
 
-.beigeBtn {
-  margin: 20px auto 0px auto;
+.btn-gp-primary:hover, button.btn-gp-primary:active:focus  {
+  background-color: #c0977c;
 }
 
-.beigeBtn:hover, #filterForm button:hover {
-  background-color: #a88771;
+button.btn-gp-primary:active:focus  {
+  background-color: #d4b39d;
 }
 
-.timeBtn {
-  margin: 10px auto 0px auto;
+.btn-green {
   background-color: #A4AA84;
-  color: #f8faed; 
-  font-weight: 700;
-}
-
-.timeBtn:hover {
-  background-color: #65694d;
-}
-
-.deleteBtn {
-  font-size: 0.8em;
   color: white;
-  background-color: rgb(228, 77, 77);
 }
 
-.deleteBtn:hover {
-  background-color: rgb(168, 50, 50);
+.btn-green:hover {
+  background-color: #7e855a;
+  color: white;
 }
 
-#filterForm button {
-  font-weight: 600;
-}
-
-.smallDeleteBtn {
-  margin-left: 10px;
-  font-size: 0.8em;
-  font-weight: 600;
-  color: red;
-  background-color: transparent;
-  border: none;
-  text-decoration: underline;
-}
-
-.adminBtn {
-  font-size: 0.9em;
-  padding: 10px;
-  background-color: transparent;
-  border: none;
-  text-decoration: underline;
-  color: black;
-}
-
-form:has(.adminBtn ){
-  position: relative;
-  width: fit-content;
-}
-
-.adminDeleteBtn {
-  color: red;
-}
-
-/* Tables */
-.calendar, .table {
-  display: block;
-  margin: 20px auto;
-  width: fit-content;
-}
-
-.calendar th:first-of-type {
-  text-align: center;
-}
-
-.calendar th, .table th {
-  background-color: #E5E8D5;
-}
-
-.calendar th, .calendar td {
-  padding: 5px 10px;
-}
-
-.calendar td, .table td {
-  border-left: solid 1px #E5E8D5;
-  border-right: solid 1px #E5E8D5;
-}
-
-.timeBtn.chosenTime {
-  background-color: white;
-  border: solid 2px #A4AA84;
-  color: #A4AA84;
-}
-
-.table tr:hover, .allBookings tr:hover {
-  background-color: #e8e9e6;
-}
-
-.table td {
-  padding: 0px;
-}
-
-.table a {
-  color: black;
-  text-decoration: none;
-  width: 100%;
-  height: 100%;
-  padding: 5px 10px;
-}
-
-/* Index */
-#serviceContainer {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-}
-
-.serviceBlock {
-  width: 30%;
-  padding: 10px 20px;
-  margin: 20px 10px;
-  border: solid 1px #CAAB97;
-  background-color: white;
-}
-
-.serviceDetails {
-  display: flex;
-}
-
-.serviceDetails p:first-of-type {
-  margin-right: 40px;
+button.btn-green:active:focus {
+  background-color: #ced4af;
 }
 
 /* Booking form */
-.titleContainer {
-  display: flex;
-  justify-content: space-between;
-}
-
-.stepCounter {
-  display: flex;
-  align-items: center;
-}
-
 .counterBars {
   height: 5px;
   width: 20px;
@@ -215,37 +79,4 @@ form:has(.adminBtn ){
 
 .activeBar {
   background-color: #258cfb;
-}
-
-/* All bookings */
-#filterForm {
-  display: flex;
-}
-
-#filterForm > div {
-  margin-right: 20px;
-}
-
-/* Booking details */
-li:has(form) {
-  display: flex;
-}
-
-form:has(.smallDeleteBtn) {
-  width: fit-content;
-  position: relative;
-}
-
-.titleContainer div {
-  display: flex;
-  align-items: center;
-}
-
-/* Hairdressera */
-.userArticle h2 {
-  font-size: 1.2em;
-}
-
-.userArticle {
-  margin: 10px 0px;
 }

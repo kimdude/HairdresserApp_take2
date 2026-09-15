@@ -9,19 +9,19 @@ public class Service
     //Properties
     public int Id { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "Titeln måste vara 3-35 tecken lång.")]
     [MaxLength(35), MinLength(3)]
     public required string Title { get; set; }
 
     [MaxLength(250)]
     public string? Description { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "Ange pris.")]
     [DataType(DataType.Currency)]
     public decimal Price { get; set; }
 
-    [Required]
-    public required TimeSpan Duration { get; set; }
+    [Required(ErrorMessage = "Ange tidsspann.")]
+    public required int Duration { get; set; }
 
     //Dependants
     public ICollection<OfferedService> OfferedServices { get; } = new List<OfferedService>();

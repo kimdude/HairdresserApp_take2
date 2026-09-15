@@ -6,7 +6,7 @@
     ViewData[index: "Title"] = "Lägg till frisör för tjänst";
 }
 
-<section>
+<section class="m-4">
     <h1>@ViewBag.ServiceTitle</h1>
     <p><strong>Lägg till frisör som erbjuder tjänsten.</strong></p>
 
@@ -16,13 +16,15 @@
         <input type="hidden" asp-for="ServiceId" value="@ViewBag.ServiceId"/>
 
         <div>
-            <label asp-for="HairdresserId">Frisör</label>
-            <select asp-for="HairdresserId" asp-items="ViewBag.Hairdresser">
+            <label asp-for="HairdresserId" class="form-label">Frisör: </label>
+            <select asp-for="HairdresserId" asp-items="ViewBag.Hairdresser" class="form-select">
                 <option value="" selected disabled>Välj</option>
             </select>
-            <span asp-validation-for="HairdresserId"></span>
+            <span asp-validation-for="HairdresserId" class="text-danger"></span>
         </div>
 
-        <input type="submit" value="Uppdatera" class="beigeBtn" />
+        <div class="d-grid gap-2 col-1 mx-auto">
+            <input type="submit" value="Uppdatera" class="btn btn-gp-primary mt-4"/>
+        </div>
     </form>
 </section>

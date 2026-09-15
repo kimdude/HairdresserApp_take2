@@ -6,40 +6,48 @@
     ViewData[index: "Title"] = "Tjänster";
 }
 
-<section>
+<section  class="m-4">
     <h1>Alla tjänster</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Tjänst</th>
-                <th>Tid</th>
-                <th>Pris</th>
-                <th>Erbjuds</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach(var service in Model) {
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
                 <tr>
-                    <td><a asp-action="ServiceDetails" asp-route-id="@service.Id">@service.Title</a></td>
-                    <td><a asp-action="ServiceDetails" asp-route-id="@service.Id">@service.Duration</a></td>
-                    <td><a asp-action="ServiceDetails" asp-route-id="@service.Id">@service.Price</a></td>
-                    @if(service.OfferedServices.Any()) {
-                        <td class="availableService">
-                            <a asp-action="ServiceDetails" asp-route-id="@service.Id">Erbjuds</a>
-                        </td>
-                    } 
-                    else 
-                    {
-                        <td class="unavailableService">
-                            <a asp-action="ServiceDetails" asp-route-id="@service.Id">Erbjuds ej</a>
-                        </td>
-                    }
+                    <th scope="col">Tjänst</th>
+                    <th scope="col">Tid</th>
+                    <th scope="col">Pris</th>
+                    <th scope="col">Erbjuds</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach(var service in Model) {
+                    <tr>
+                        <td><a class="d-block text-dark text-decoration-none w-100" asp-action="ServiceDetails" asp-route-id="@service.Id">@service.Title</a></td>
+                        <td><a class="d-block text-dark text-decoration-none w-100" asp-action="ServiceDetails" asp-route-id="@service.Id">@service.Duration min</a></td>
+                        <td><a class="d-block text-dark text-decoration-none w-100" asp-action="ServiceDetails" asp-route-id="@service.Id"> @Math.Round(service.Price) kr</a></td>
+                        @if(service.OfferedServices.Any()) {
+                            <td>
+                                <a class="d-block text-dark text-decoration-none w-100" asp-action="ServiceDetails" asp-route-id="@service.Id" aria-label="Tjänsten erbjuds">
+                                    <span class="bg-success rounded-circle border-light p-2 d-inline-block"></span>
+                                </a>
+                            </td>
+                        } 
+                        else 
+                        {
+                            <td>
+                                <a class="d-block text-dark text-decoration-none w-100" asp-action="ServiceDetails" asp-route-id="@service.Id" aria-label="Tjänsten erbjuds inte">
+                                    <span class="bg-warning rounded-circle border-light p-2 d-inline-block"></span>
+                                </a>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 
     <!-- Adding new service -->
-    <a asp-action="CreateService" class="beigeBtn">Ny tjänst</a>
+    <div class="d-grid gap-2 col-1 mx-auto mt-3">
+        <a asp-action="CreateService" class="btn btn-gp-primary">Ny tjänst</a>
+    </div>
 </section>

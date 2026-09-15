@@ -6,7 +6,7 @@
     ViewData[index: "Title"] = "Uppdatera tjänst";
 }
 
-<section>
+<section class="m-4">
     <h1>Uppdatera @Model.Title</h1>
 
     <form asp-action="UpdateService" method="post">
@@ -14,31 +14,32 @@
         <div asp-validation-summary="ModelOnly"></div>
         <input type="hidden" asp-for="Id" />
          
-        <div>
-            <label asp-for="Title">Titel: </label>
-            <input asp-for="Title" value="@Model.Title" />
-            <span asp-validation-for="Title"></span>
+        <div class="mt-3">
+            <label asp-for="Title" class="form-label">Titel: </label>
+            <input asp-for="Title" value="@Model.Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
         </div>
 
-        <div>
-            <label asp-for="Description">Beskrivning: </label>
-            <input asp-for="Description" value="@Model.Description" />
-            <span asp-validation-for="Description"></span>
+        <div class="mt-3">
+            <label asp-for="Description" class="form-label">Beskrivning: </label>
+            <input asp-for="Description" value="@Model.Description" class="form-control"/>
+            <span asp-validation-for="Description" class="text-danger"></span>
         </div>
 
-        <div>
-            <label asp-for="Price">Pris: </label>
-            <input asp-for="Price" value="@Model.Price" />
-            <span asp-validation-for="Price"></span>
- 
-            <label asp-for="Duration">Tid: </label>
-            <input asp-for="Duration" value="@Model.Duration" />
-            <span asp-validation-for="Duration"></span>
+        <div class="mt-3">
+            <label asp-for="Price" class="form-label">Pris: </label>
+            <input asp-for="Price" value="@Model.Price" class="form-control"/>
+            <span asp-validation-for="Price" class="text-danger"></span>
         </div>
 
-        <div>
-        </div>
+        <div class="mt-3">
+            <label asp-for="Duration" class="form-label">Tid (minuter): </label>
+            <input asp-for="Duration" value="@Model.Duration" class="form-control"/>
+            <span asp-validation-for="Duration" class="text-danger"></span>
+        </div class="mt-3">
 
-        <input type="submit" value="Uppdatera" class="beigeBtn" />
+        <div class="d-grid gap-2 col-1 mx-auto">
+            <input type="submit" value="Uppdatera" class="btn btn-gp-primary mt-3"/>
+        </div>
     </form>
 </section>

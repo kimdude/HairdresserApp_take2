@@ -4,80 +4,87 @@
     ViewData[index: "Title"] = "Bokningar";
 }
 
-<section>
+<section class="m-4">
     <h1>Bokningar</h1>
 
     @* Filter *@
-    <form asp-action="GetBookings" method="post" id="filterForm">
+    <form asp-action="GetBookings" method="post" id="filterForm" class="d-flex align-items-center mb-4">
         @Html.AntiForgeryToken()
         
         @* Hairdresser selection *@
-        <div>
-            <label for="hairdresser">Frisör: </label>
-            <select id="hairdresser" name="hairdresser" asp-items="ViewBag.Hairdressers">
-                <option value="">Alla</option>
-            </select>
+        <div class="row me-3 align-items-center">
+            <div class="col col-auto">
+                <label for="hairdresser" class="form-label">Frisör: </label>
+            </div>
+
+            <div class="col col-auto">
+                <select id="hairdresser" class="form-select" name="hairdresser" asp-items="ViewBag.Hairdressers">
+                    <option value="">Alla</option>
+                </select>
+            </div>
         </div>
 
         @* Timeframe selection *@
         <div>
-            <label>
-                <input type="radio" name="timeframe" value="today" checked />
+            <label class="me-2 form-check-label">
+                <input class="form-check-input" type="radio" name="timeframe" value="today" checked />
                 Idag
             </label>
 
-            <label>
-                <input type="radio" name="timeframe" value="week" />
+            <label class="form-check-label">
+                <input class="form-check-input" type="radio" name="timeframe" value="week" />
                 Veckan
             </label>
         </div>
 
-        <button type="submit">Filtrera</button>
+        <button type="submit" class="btn btn-gp-primary ms-4">Filtrera</button>
     </form>
 
     @* Bookings overview *@
-    <table class="calendar allBookings">
-        <thead>
-            <tr>
-                <th>Datum</th>
-                <th>Tid</th>
-                <th>Kund</th>
-                <th>Tjänst</th>
-                <th>Frisör</th>
-                <th>Pris</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @if(Model.Count() == 0) {
-                <tr><td colspan="7">Inga bokningar</td></tr>
-            } else {
-                @foreach(Booking booking in Model) {
+    <div class="table-responsive">
+        <table class="table table-hover table-striped">
+            <thead>
                 <tr>
-                    <td>@booking.DateAndTime.ToString("ddd dd'/'MM", new CultureInfo("sv-EU"))</td>
-                    <td>@booking.DateAndTime.ToString("HH:mm")</td>
-                    <td>@booking.Customer?.Fname @booking.Customer?.Lname</td>
-                    <td>@foreach(BookedService bookedService in booking.BookedServices) {
-                            @bookedService.Service?.Title
-                        }  
-                    </td>
-                    <td>@booking.Hairdresser?.Fname @booking.Hairdresser?.Lname</td>
-                    <td>@booking.TotalCost</td>
-                    <td>
-
-                        @* Delete btn *@
-                        <form asp-action="DeleteBooking" method="post">
-                            <input type="hidden" name="id" value="@booking.Id" />
-                            <button type="submit" class="deleteBtn">Avboka</button>
-                        </form>
-
-                        @* Edit btn *@
-                        <a asp-action="UpdateBooking" asp-route-id="@booking.Id">Omboka</a>
-                    </td>
+                    <th scope="col">Datum</th>
+                    <th scope="col">Tid</th>
+                    <th scope="col">Kund</th>
+                    <th scope="col">Tjänst</th>
+                    <th scope="col">Frisör</th>
+                    <th scope="col">Pris</th>
+                    <th scope="col">Hantera</th>
                 </tr>
+            </thead>
+            <tbody>
+                @if(Model.Count() == 0) {
+                    <tr><td colspan="7">Inga bokningar</td></tr>
+                } else {
+                    @foreach(Booking booking in Model) {
+                    <tr>
+                        <td>@booking.DateAndTime.ToString("ddd dd'/'MM", new CultureInfo("sv-EU"))</td>
+                        <td>@booking.DateAndTime.ToString("HH:mm")</td>
+                        <td>@booking.Customer?.Fname @booking.Customer?.Lname</td>
+                        <td>@foreach(BookedService bookedService in booking.BookedServices) {
+                                @bookedService.Service?.Title
+                            }  
+                        </td>
+                        <td>@booking.Hairdresser?.Fname @booking.Hairdresser?.Lname</td>
+                        <td> @Math.Round(booking.TotalCost) kr</td>
+                        <td>
+
+                            @* Delete btn *@
+                            <form asp-action="DeleteBooking" method="post">
+                                <input type="hidden" name="id" value="@booking.Id" />
+                                <button type="submit" class="btn btn-danger btn-sm">Avboka</button>
+                            </form>
+
+                            @* Edit btn *@
+                            <a asp-action="UpdateBooking" asp-route-id="@booking.Id" class="btn btn-warning mt-2 btn-sm">Omboka</a>
+                        </td>
+                    </tr>
+                    }
                 }
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 
 </section>

@@ -6,24 +6,28 @@
     ViewData[index: "Title"] = "Frisörer";
 }
 
-<section>
+<section class="m-4">
     <h1>Frisörer</h1>
 
     @foreach(var hairdresser in Model) {
-        <article class="userArticle">
-            <h2>@hairdresser.Fname @hairdresser.Lname</h2>
-            <p>@hairdresser.User.Email</p>
+        <article class="card mt-2 mb-2">
+            <div class="card-body">
+                <h2 class="card-title">@hairdresser.Fname @hairdresser.Lname</h2>
+                <p class="card-text">@hairdresser.User.Email</p>
 
-            <div>
-                <a asp-action="UpdateHairdresser" asp-route-id="@hairdresser.Id">Redigera</a>
+                <div class="d-flex align-items-center gap-2">
+                    <form asp-action="DeleteHairdresser" method="post">
+                        <input type="hidden" name="id" value="@hairdresser.Id" />
+                        <input class="btn btn-link text-danger p-0" type="submit" value="Ta bort" />
+                    </form>
 
-                <form asp-action="DeleteHairdresser" method="post">
-                    <input type="hidden" name="id" value="@hairdresser.Id" />
-                    <input type="submit" value="Ta bort" />
-                </form>
+                    <a class="text-dark" asp-action="UpdateHairdresser" asp-route-id="@hairdresser.Id">Redigera</a>
+                </div>      
             </div>
         </article>
     }
 
-    <a class="beigeBtn" asp-area="Identity" asp-page="/Account/Register">Ny frisör</a>
+    <div class="d-grid gap-2 col-1 mx-auto">
+        <a class="btn btn-gp-primary mt-3" asp-area="Identity" asp-page="/Account/Register">Ny frisör</a>
+    </div>
 </section>

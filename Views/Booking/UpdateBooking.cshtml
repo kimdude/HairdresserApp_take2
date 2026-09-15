@@ -6,8 +6,18 @@
     ViewData[index: "Title"] = "Omboka";
 }
 
-<section>
-    <h1>Omboka @Model.ServiceTitle</h1>
+<section class="m-4">
+    <div class="row align-items-center mb-3">
+        <div class="col">
+            <h1>Omboka @Model.ServiceTitle</h1>
+        </div>
+
+        <div class="d-flex col-auto">
+            <div class="counterBars @(Model.BookingStep == 1 ?"activeBar" : "")"></div>
+            <div class="counterBars @(Model.BookingStep == 2 ?"activeBar" : "")"></div>
+            <div class="counterBars @(Model.BookingStep == 3 ?"activeBar" : "")"></div>
+        </div>
+    </div>
 
     <form asp-action="UpdateBooking" method="post">
 
@@ -28,60 +38,71 @@
 
             @* Hairdresser selection *@
             <div>
-                <label asp-for="SelectedHairdresserId"></label>
-                <select asp-for="SelectedHairdresserId" asp-items="Model.Hairdressers">
+                <label asp-for="SelectedHairdresserId" class="form-label">Frisör: </label>
+                <select asp-for="SelectedHairdresserId" asp-items="Model.Hairdressers" class="form-select">
                 </select>
-                <span asp-validation-for="SelectedHairdresserId"></span>
+                <span asp-validation-for="SelectedHairdresserId" class="text-danger"></span>
             </div>
 
-            <button class="beigeBtn">Nästa</button>
-
+            <div class="d-grid gap-2 col-1 mx-auto">
+                <button class="btn btn-gp-primary mt-3">Nästa</button>
+            </div>
         } 
         else if(Model.BookingStep == 2) 
         {
             <input type="hidden" asp-for="SelectedHairdresserId" value="@Model.SelectedHairdresserId"/>
 
             @* Time and date selection *@
-            <table class="calendar">
-                <thead>
-                    <tr>
-                        <th colspan="5">Vecka @ViewBag.Week</th>
-                    </tr>
-                    <tr>
-                        @foreach(DateTime day in ViewBag.Day) {
-                        <th scope="col">@day.ToString("ddd d'/'M", new CultureInfo("sv-SE"))</th>
+            <div class="table-responsive">
+                <table class="table table-striped-columns">
+                    <thead>
+                        <tr class="text-center">
+                            <th colspan="5">Vecka @ViewBag.Week</th>
+                        </tr>
+                        <tr class="table-group-divider">
+                            @foreach(DateTime day in ViewBag.Day) {
+                            <th scope="col">@day.ToString("ddd d'/'M", new CultureInfo("sv-SE"))</th>
+                            }
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach(string hour in ViewBag.Hours) {
+                        <tr>
+                            @foreach(DateTime day in ViewBag.Day) {
+                                DateTime selectedTime = day.Date.Add(TimeSpan.Parse(hour)); //Adding time to date object
+
+                                List<DateTime> bookedHours = ViewBag.BookedHours;
+                                bool unavailable = bookedHours.Any(booking => booking == selectedTime); //Checking if datetime already is booked
+
+                                @if(selectedTime == Model.SelectedDateAndTime) {
+                                    <td>
+                                        <div class="d-grid gap-2 col-6 mx-auto">
+                                            <button class="btn btn-outline-secondary" name="SelectedDateAndTime" value="@selectedTime">@hour</button>
+                                        </div>
+                                    </td>
+                                }
+                                else if(selectedTime < DateTime.Now || unavailable) { 
+                                    <td>Ej tillgänglig</td>
+                                }
+                                else {
+                                    <td>
+                                        <div class="d-grid gap-2 col-6 mx-auto">
+                                            <button class="btn btn-green" name="SelectedDateAndTime" value="@selectedTime">@hour</button>
+                                        </div>
+                                    </td>
+                                }
+                            }
+                        </tr>
                         }
-                    </tr>
-                </thead>
-
-                <tbody>
-                    @foreach(string hour in ViewBag.Hours) {
-                    <tr>
-                        @foreach(DateTime day in ViewBag.Day) {
-                            DateTime selectedTime = day.Date.Add(TimeSpan.Parse(hour)); //Adding time to date object
-
-                            List<DateTime> bookedHours = ViewBag.BookedHours;
-                            bool unavailable = bookedHours.Any(booking => booking == selectedTime); //Checking if datetime already is booked
-
-                            @if(selectedTime == Model.SelectedDateAndTime) {
-                                <td><button class="timeBtn chosenTime" name="SelectedDateAndTime" value="@selectedTime">@hour</button></td>
-                            }
-                            else if(selectedTime < DateTime.Now || unavailable) { 
-                                <td>Ej tillgänglig</td>
-                            }
-                            else {
-                                <td><button class="timeBtn" name="SelectedDateAndTime" value="@selectedTime">@hour</button></td>
-                            }
-                        }
-                    </tr>
-                    }
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
 
         } 
         else if(Model.BookingStep == 3) 
         {
-            <p>Tiden har ombokats till <strong>@Model.SelectedDateAndTime.ToString("ddd dd'/'MM", new CultureInfo("sv-SE"))</strong>, klockan <strong>@Model.SelectedDateAndTime.ToString("HH:mm")</strong>.</p>
+            <p class="mt-4">Tiden har ombokats till <strong>@Model.SelectedDateAndTime.ToString("ddd dd'/'MM", new CultureInfo("sv-SE"))</strong>, klockan <strong>@Model.SelectedDateAndTime.ToString("HH:mm")</strong>.</p>
             <p>Bekräftelse skickas till <strong>@Model.Email</strong>.</p>
         }
 

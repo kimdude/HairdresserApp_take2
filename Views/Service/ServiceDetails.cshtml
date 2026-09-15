@@ -6,46 +6,46 @@
     ViewData[index: "Title"] = "Om tjänsten";
 }
 
-<section>
+<section class="m-4">
     
-    <div class="titleContainer">
+    <div class="d-md-flex align-items-center mb-4">
         <h1>@Model.Title</h1>
 
-        <div>
+        <div class="d-flex align-items-center ms-auto gap-1"> 
             @* Delete Button *@
-            <form method="post" asp-action="DeleteService">
+            <form method="post" asp-action="DeleteService"">
                 <input type="hidden" name="id" value="@Model.Id" />
-                <input type="submit" value="Ta bort" class="adminBtn adminDeleteBtn" />
+                <input type="submit" value="Ta bort" class="btn text-decoration-underline text-danger p-0" />
             </form>
-
-            <a asp-action="AddOfferedService" asp-route-id="@Model.Id" asp-route-title="@Model.Title" class="adminBtn">Lägg till frisör</a>
-            <a asp-action="UpdateService" asp-route-id="@Model.Id" class="adminBtn">Redigera</a>
+        
+            <a class="btn text-decoration-underline text-dark" asp-action="AddOfferedService" asp-route-id="@Model.Id" asp-route-title="@Model.Title" class="adminBtn">Lägg till frisör</a>
+            <a class="btn text-decoration-underline text-dark" asp-action="UpdateService" asp-route-id="@Model.Id" class="adminBtn">Redigera</a>
         </div>
     </div>
 
     @* Service details *@
-    <div class="serviceDetails">
-        <p>Tid: @Model.Duration</p>
-        <p>Pris: @Model.Price kr</p>
+    <div class="d-flex gap-3">
+        <p>Tid: @Model.Duration min</p>
+        <p>Pris: @Math.Round(Model.Price) kr</p>
     </div>
 
     @* Service description *@
     <p>@Model.Description</p>
 
     @* Hairstylists offering *@
-    <p><strong>Erbjuds av:</strong></p>
+    <p class="mt-4"><strong>Erbjuds av:</strong></p>
     @if(Model.OfferedServices.Count == 0) {
         <p>Tjänsten erbjuds inte</p>
     } else {
     <ul>
         @foreach(var service in Model.OfferedServices) {
-            <li>
+            <li class="d-flex align-items-center">
                 @service.Hairdresser?.Fname @service.Hairdresser?.Lname
 
                 <form method="post" asp-action="DeleteOfferedService">
                     <input type="hidden" name="hairdresserId" value="@service.HairdresserId" />
                     <input type="hidden" name="serviceId" value="@service.ServiceId" />
-                    <input type="submit" value="Ta bort" class="smallDeleteBtn" />
+                    <input type="submit" value="Ta bort" class="btn text-danger" />
                 </form>
             </li>
         }

@@ -6,7 +6,7 @@
     ViewData[index: "Title"] = "Uppdatera frisör";
 }
 
-<section>
+<section class="m-4">
     <h1>Uppdatera @Model.Fname</h1>
 
     <form asp-action="UpdateHairdresser" method="post">
@@ -15,17 +15,19 @@
         <input type="hidden" asp-for="Id" />
          
         <div>
-            <label asp-for="Fname">Förnamn: </label>
-            <input asp-for="Fname" value="@Model.Fname" />
-            <span asp-validation-for="Fname"></span>
+            <label asp-for="Fname" class="form-label">Förnamn: </label>
+            <input asp-for="Fname" value="@Model.Fname" class="form-control"/>
+            <span asp-validation-for="Fname" class="text-danger"></span>
         </div>
 
-        <div>
-            <label asp-for="Lname">Efternamn: </label>
-            <input asp-for="Lname" value="@Model.Lname" />
-            <span asp-validation-for="Lname"></span>
+        <div class="mt-2">
+            <label asp-for="Lname" class="form-label">Efternamn: </label>
+            <input asp-for="Lname" value="@Model.Lname" class="form-control" />
+            <span asp-validation-for="Lname" class="text-danger"></span>
         </div>
 
-        <input type="submit" value="Uppdatera" class="beigeBtn" />
+        <div class="d-grid gap-2 col-1 mx-auto">
+            <input type="submit" value="Uppdatera" class="btn btn-gp-primary mt-3" />
+        </div>
     </form>
 </section>

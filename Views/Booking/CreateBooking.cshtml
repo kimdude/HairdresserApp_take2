@@ -8,145 +8,165 @@
     
     ViewData["Title"] = "Boka tid";
 }
+<section class="m-4">
 
-<div class="titleContainer">
-    <h1>Boka @Model.ServiceTitle</h1>
+    <div class="row align-items-center mb-3">
+        <div class="col">
+            <h1>Boka @Model.ServiceTitle</h1>
+        </div>
 
-    <div class="stepCounter">
-        <div class="counterBars @(Model.BookingStep == 1 ?"activeBar" : "")"></div>
-        <div class="counterBars @(Model.BookingStep == 2 ?"activeBar" : "")"></div>
-        <div class="counterBars @(Model.BookingStep == 3 ?"activeBar" : "")"></div>
-        <div class="counterBars @(Model.BookingStep == 4 ?"activeBar" : "")"></div>
-        <div class="counterBars @(Model.BookingStep == 5 ?"activeBar" : "")"></div>
+        <div class="d-flex col-auto">
+            <div class="counterBars @(Model.BookingStep == 1 ?"activeBar" : "")"></div>
+            <div class="counterBars @(Model.BookingStep == 2 ?"activeBar" : "")"></div>
+            <div class="counterBars @(Model.BookingStep == 3 ?"activeBar" : "")"></div>
+            <div class="counterBars @(Model.BookingStep == 4 ?"activeBar" : "")"></div>
+            <div class="counterBars @(Model.BookingStep == 5 ?"activeBar" : "")"></div>
+        </div>
     </div>
-</div>
 
-<form method="post" class="createBookingForm">
+    <form method="post" class="createBookingForm">
 
-    <!-- Hidden service Id -->
-    <input type="hidden" asp-for="ServiceId" value="@Model.ServiceId"/>
+        <!-- Hidden service Id -->
+        <input type="hidden" asp-for="ServiceId" value="@Model.ServiceId"/>
 
-    <!-- Hidden booking step -->
-    <input type="hidden" asp-for="BookingStep" value="@Model.BookingStep"/>
+        <!-- Hidden booking step -->
+        <input type="hidden" asp-for="BookingStep" value="@Model.BookingStep"/>
 
-    @{
-        if(Model.BookingStep == 1) 
-        {
+        @{
+            if(Model.BookingStep == 1) 
+            {
 
-            @* Hairdresser selection *@
-            <div>
-                <label asp-for="SelectedHairdresserId"></label>
-                <select asp-for="SelectedHairdresserId" asp-items="Model.Hairdressers">
-                    <option value="">Välj frisör</option>
-                </select>
-                <span asp-validation-for="SelectedHairdresserId"></span>
-            </div>
+                @* Hairdresser selection *@
+                <div>
+                    <label asp-for="SelectedHairdresserId" class="form-label">Frisör: </label>
+                    <select asp-for="SelectedHairdresserId" asp-items="Model.Hairdressers" class="form-control">
+                        <option value="">Välj frisör</option>
+                    </select>
+                    <span asp-validation-for="SelectedHairdresserId" class="text-danger"></span>
+                </div>
 
-            <button class="beigeBtn">Nästa</button>
+                <div class="d-grid gap-2 col-1 mx-auto">
+                    <button class="btn btn-gp-primary mt-3">Nästa</button>
+                </div>
 
-        } else if(Model.BookingStep == 2) {
+            } else if(Model.BookingStep == 2) {
 
-            <!-- Hidden input for hairdresser -->
-            <input type="hidden" asp-for="SelectedHairdresserId" value="@Model.SelectedHairdresserId"/>
+                <!-- Hidden input for hairdresser -->
+                <input type="hidden" asp-for="SelectedHairdresserId" value="@Model.SelectedHairdresserId"/>
 
-            @* Time and date selection *@
-            <table class="calendar">
-                <thead>
-                    <tr>
-                        <th colspan="5">Vecka @ViewBag.Week</th>
-                    </tr>
-                    <tr>
-                        @foreach(DateTime day in ViewBag.Day) {
-                        <th scope="col">@day.ToString("ddd d'/'M", new CultureInfo("sv-SE"))</th>
-                        }
-                    </tr>
-                </thead>
+                @* Time and date selection *@
+                <div class="table-responsive">
+                    <table class="table table-striped-columns">
+                        <thead>
+                            <tr class="text-center">
+                                <th colspan="5">Vecka @ViewBag.Week</th>
+                            </tr>
+                            <tr class="table-group-divider">
+                                @foreach(DateTime day in ViewBag.Day) {
+                                <th scope="col">@day.ToString("ddd d'/'M", new CultureInfo("sv-SE"))</th>
+                                }
+                            </tr>
+                        </thead>
 
-                <tbody>
-                    @foreach(string hour in ViewBag.Hours) {
-                    <tr>
-                        @foreach(DateTime day in ViewBag.Day) {
-                            DateTime selectedTime = day.Date.Add(TimeSpan.Parse(hour)); //Adding time to date object
+                        <tbody>
+                            @foreach(string hour in ViewBag.Hours) {
+                            <tr>
+                                @foreach(DateTime day in ViewBag.Day) {
+                                    DateTime selectedTime = day.Date.Add(TimeSpan.Parse(hour)); //Adding time to date object
 
-                            List<DateTime> bookedHours = ViewBag.BookedHours;
-                            bool unavailable = bookedHours.Any(booking => booking == selectedTime); //Checking if datetime already is booked
+                                    List<DateTime> bookedHours = ViewBag.BookedHours;
+                                    bool unavailable = bookedHours.Any(booking => booking == selectedTime); //Checking if datetime already is booked
 
-                            @if(selectedTime < DateTime.Now || unavailable) { 
-                                <td>Ej tillgänglig</td>
+                                    @if(selectedTime < DateTime.Now || unavailable) { 
+                                        <td>Ej tillgänglig</td>
+                                    }
+                                    else {
+                                        <td>
+                                            <div class="d-grid gap-2 col-6 mx-auto">
+                                                <button class="btn btn-green" name="SelectedDateAndTime" value="@selectedTime">@hour</button>
+                                            </div>
+                                        </td>
+                                    }
+                                }
+                            </tr>
                             }
-                            else {
-                                <td><button class="timeBtn" name="SelectedDateAndTime" value="@selectedTime">@hour</button></td>
-                            }
-                        }
-                    </tr>
-                    }
-                </tbody>
-            </table>
+                        </tbody>
+                    </table>
+                </div>
 
+            }
+            else if(Model.BookingStep == 3) 
+            {
+
+                <!-- Hidden input for hairdresser -->
+                <input type="hidden" asp-for="SelectedHairdresserId" value="@Model.SelectedHairdresserId"/>
+                <input type="hidden" asp-for="SelectedDateAndTime" value="@Model.SelectedDateAndTime"/>
+
+                @* Email input *@
+                <div>
+                    <label asp-for="Email" class="form-label">E-postadress: </label>
+                    <input asp-for="Email" class="form-control"/>
+                    <span asp-validation-for="Email"  class="text-danger"></span>
+                </div>
+
+                <div class="d-grid gap-2 col-1 mx-auto mt-3">
+                    <button class="btn btn-gp-primary">Nästa</button>
+                </div>
+
+            } 
+            else if(Model.BookingStep == 4) 
+            {
+
+                <!-- Hidden inputs for previous chosen values -->
+                <input type="hidden" asp-for="SelectedHairdresserId" value="@Model.SelectedHairdresserId"/>
+                <input type="hidden" asp-for="SelectedDateAndTime" value="@Model.SelectedDateAndTime"/>
+                <input type="hidden" asp-for="Email" value="@Model.Email"/>
+                <input type="hidden" asp-for="CustomerId" value="@Model.CustomerId"/>
+                
+                @* Firstname input *@
+                <div>
+                    <label asp-for="CustomerFname" class="form-label">Förnamn: </label>
+                    <input asp-for="CustomerFname" class="form-control"/>
+                    <span asp-validation-for="CustomerFname" class="text-danger"></span>
+                </div>
+
+                @* Surname input *@
+                <div class="mt-3">
+                    <label asp-for="CustomerLname" class="form-label">Efternamn: </label>
+                    <input asp-for="CustomerLname" class="form-control"/>
+                    <span asp-validation-for="CustomerLname" class="text-danger"></span>
+                </div>
+
+                <div class="d-grid gap-2 col-1 mx-auto">
+                    <button class="btn btn-gp-primary mt-3">Bekräfta</button>
+                </div>
+
+            } 
+            else if(Model.BookingStep == 5) {
+                <!-- Hidden inputs for previous chosen values -->
+                <input type="hidden" asp-for="SelectedHairdresserId" value="@Model.SelectedHairdresserId"/>
+                <input type="hidden" asp-for="SelectedDateAndTime" value="@Model.SelectedDateAndTime"/>
+                <input type="hidden" asp-for="Email" value="@Model.Email"/>
+                <input type="hidden" asp-for="CustomerId" value="@Model.CustomerId"/>
+                <input type="hidden" asp-for="CustomerFname" value="@Model.CustomerFname"/>
+                <input type="hidden" asp-for="CustomerLname" value="@Model.CustomerLname"/>
+                <input type="hidden" asp-for="ServicePrice" value="@Model.ServicePrice"/>
+
+                @* Booking confirmation *@
+                <h2 class="mt-4">Vill du lägga bokningen?</h2>
+                <p class="mt-3">Tjänst: <strong>@Model.ServiceTitle</strong></p>
+                <p>Frisör: <strong>@ViewData["Hairdresser"]</strong></p>
+                <p>Datum och tid: <strong>@Model.SelectedDateAndTime</strong></p>
+                <p>Din email: <strong>@Model.Email</strong></p>
+
+                <p class="bookingSummary"><strong>Totalt: @Model.ServicePrice kr</strong></p>
+
+                <div class="d-grid gap-2 col-1 mx-auto mt-3">
+                    <input type="submit" value="Boka" class="btn btn-gp-primary"/>
+                </div>
+
+            }
         }
-        else if(Model.BookingStep == 3) 
-        {
 
-            <!-- Hidden input for hairdresser -->
-            <input type="hidden" asp-for="SelectedHairdresserId" value="@Model.SelectedHairdresserId"/>
-            <input type="hidden" asp-for="SelectedDateAndTime" value="@Model.SelectedDateAndTime"/>
-
-            @* Email input *@
-            <div>
-                <label asp-for="Email"></label>
-                <input asp-for="Email" />
-                <span asp-validation-for="Email"></span>
-            </div>
-
-            <button class="beigeBtn">Nästa</button>
-
-        } 
-        else if(Model.BookingStep == 4) 
-        {
-
-            <!-- Hidden inputs for previous chosen values -->
-            <input type="hidden" asp-for="SelectedHairdresserId" value="@Model.SelectedHairdresserId"/>
-            <input type="hidden" asp-for="SelectedDateAndTime" value="@Model.SelectedDateAndTime"/>
-            <input type="hidden" asp-for="Email" value="@Model.Email"/>
-            <input type="hidden" asp-for="CustomerId" value="@Model.CustomerId"/>
-            
-            @* Firstname input *@
-            <div>
-                <label asp-for="CustomerFname"></label>
-                <input asp-for="CustomerFname" />
-                <span asp-validation-for="CustomerFname"></span>
-            </div>
-
-            @* Surname input *@
-            <div>
-                <label asp-for="CustomerLname"></label>
-                <input asp-for="CustomerLname" />
-                <span asp-validation-for="CustomerLname"></span>
-            </div>
-
-            <button class="beigeBtn">Bekräfta</button>  
-        } 
-        else if(Model.BookingStep == 5) {
-            <!-- Hidden inputs for previous chosen values -->
-            <input type="hidden" asp-for="SelectedHairdresserId" value="@Model.SelectedHairdresserId"/>
-            <input type="hidden" asp-for="SelectedDateAndTime" value="@Model.SelectedDateAndTime"/>
-            <input type="hidden" asp-for="Email" value="@Model.Email"/>
-            <input type="hidden" asp-for="CustomerId" value="@Model.CustomerId"/>
-            <input type="hidden" asp-for="CustomerFname" value="@Model.CustomerFname"/>
-            <input type="hidden" asp-for="CustomerLname" value="@Model.CustomerLname"/>
-            <input type="hidden" asp-for="ServicePrice" value="@Model.ServicePrice"/>
-
-            @* Booking confirmation *@
-            <h2>Vill du lägga bokningen?</h2>
-            <p>Tjänst: <strong>@Model.ServiceTitle</strong></p>
-            <p>Frisör: <strong>@ViewData["Hairdresser"]</strong></p>
-            <p>Datum och tid: <strong>@Model.SelectedDateAndTime</strong></p>
-            <p>Din email: <strong>@Model.Email</strong></p>
-
-            <p class="bookingSummary"><strong>Totalt: @Model.ServicePrice kr</strong></p>
-
-            <input type="submit" value="Boka" class="beigeBtn"/>
-        }
-    }
-
-</form>
+    </form>
+</section>

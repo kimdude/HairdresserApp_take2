@@ -5,39 +5,37 @@
     ViewData["Title"] = "Våra tjänster";
 }
 
-<div class="text-center">
+<div class="text-center m-4">
     <h1 class="display-4">Välkommen!</h1>
     <p>Boka tid genom att välja tjänst nedan.</p>
 </div>
 
-<section>
+<section class="m-4">
     <h2>Våra tjänster</h2>
 
     <!-- All available services -->
-    <div id="serviceContainer">
+    <div class="row g-4">
         @foreach(Service service in Model) {
-            <article class="serviceBlock">
-                <h3>
-                    @service.Title
-                </h3>
+            <div class="col-12 col-sm-6 col-md-4">
+                <article class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">@service.Title</h3>
 
-                <!-- Details -->
-                <div class="serviceDetails">
-                    <p>
-                        Tid: @service.Duration
-                    </p>
-                    <p>
-                        Pris: @service.Price
-                    </p>
-                </div>
+                        <!-- Details -->
+                        <div class="d-flex">
+                            <p class="card-text m-1">Tid: @service.Duration min</p>
+                            <p class="card-text m-1">Pris: @Math.Round(service.Price) kr</p>
+                        </div>
 
-                <p>
-                    @service.Description
-                </p>
+                        <p class="card-text">@service.Description</p>
 
-                <!-- Booking action -->
-                <a class="beigeBtn" asp-action="CreateBooking" asp-controller="Booking" asp-route-serviceId="@service.Id" asp-route-serviceTitle="@service.Title">Boka</a>
-            </article>
+                        <!-- Booking action -->
+                        <div class="d-grid gap-2">
+                        <a class="btn btn-gp-primary" asp-action="CreateBooking" asp-controller="Booking" asp-route-serviceId="@service.Id" asp-route-serviceTitle="@service.Title">Boka</a>
+                        </div>
+                    </div>
+                </article>
+            </div>
         }
     </div>
 </section>
