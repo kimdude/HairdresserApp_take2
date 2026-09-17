@@ -15,27 +15,34 @@
 
     <!-- All available services -->
     <div class="row g-4">
-        @foreach(Service service in Model) {
-            <div class="col-12 col-sm-6 col-md-4">
-                <article class="card">
-                    <div class="card-body">
-                        <h3 class="card-title">@service.Title</h3>
+        @if(Model.Any()) {
+            foreach(Service service in Model) {
+                <div class="col-12 col-sm-6 col-md-4">
+                    <article class="card">
+                        <div class="card-body">
+                            <h3 class="card-title">@service.Title</h3>
 
-                        <!-- Details -->
-                        <div class="d-flex">
-                            <p class="card-text m-1">Tid: @service.Duration min</p>
-                            <p class="card-text m-1">Pris: @Math.Round(service.Price) kr</p>
+                            <!-- Service details -->
+                            <div class="d-flex gap-3">
+                                <p class="card-text">Tid: @service.Duration min</p>
+                                <p class="card-text">Pris: @Math.Round(service.Price) kr</p>
+                            </div>
+
+                            <!-- Service description -->
+                            <p class="card-text">@service.Description</p>
+
+                            <!-- Book service -->
+                            <div class="d-grid gap-2">
+                                <a class="btn btn-gp-primary" asp-action="CreateBooking" asp-controller="Booking" asp-route-serviceId="@service.Id" asp-route-serviceTitle="@service.Title">Boka @service.Title</a>
+                            </div>
                         </div>
-
-                        <p class="card-text">@service.Description</p>
-
-                        <!-- Booking action -->
-                        <div class="d-grid gap-2">
-                        <a class="btn btn-gp-primary" asp-action="CreateBooking" asp-controller="Booking" asp-route-serviceId="@service.Id" asp-route-serviceTitle="@service.Title">Boka</a>
-                        </div>
-                    </div>
-                </article>
-            </div>
+                    </article>
+                </div>
+            }
+        } 
+        else 
+        {
+            <p>Just nu finns inga tjänster tillgängliga.</p>
         }
     </div>
 </section>

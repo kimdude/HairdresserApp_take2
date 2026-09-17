@@ -12,6 +12,8 @@
 
     <form asp-action="AddOfferedService" method="post">
 
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
         <!-- Hidden service Id -->
         <input type="hidden" asp-for="ServiceId" value="@ViewBag.ServiceId"/>
 

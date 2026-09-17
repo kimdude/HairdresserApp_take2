@@ -1,7 +1,7 @@
 @model HairdresserApp.Models.Service
     
 @{
-    /* View to update service */
+    /* View with service details */
 
     ViewData[index: "Title"] = "Om tjänsten";
 }
@@ -13,13 +13,13 @@
 
         <div class="d-flex align-items-center ms-auto gap-1"> 
             @* Delete Button *@
-            <form method="post" asp-action="DeleteService"">
+            <form method="post" asp-action="DeleteService">
                 <input type="hidden" name="id" value="@Model.Id" />
                 <input type="submit" value="Ta bort" class="btn text-decoration-underline text-danger p-0" />
             </form>
         
-            <a class="btn text-decoration-underline text-dark" asp-action="AddOfferedService" asp-route-id="@Model.Id" asp-route-title="@Model.Title" class="adminBtn">Lägg till frisör</a>
-            <a class="btn text-decoration-underline text-dark" asp-action="UpdateService" asp-route-id="@Model.Id" class="adminBtn">Redigera</a>
+            <a class="btn text-decoration-underline text-dark" asp-action="AddOfferedService" asp-route-id="@Model.Id" asp-route-title="@Model.Title">Lägg till frisör</a>
+            <a class="btn text-decoration-underline text-dark" asp-action="UpdateService" asp-route-id="@Model.Id">Redigera</a>
         </div>
     </div>
 
@@ -37,9 +37,9 @@
     @if(Model.OfferedServices.Count == 0) {
         <p>Tjänsten erbjuds inte</p>
     } else {
-    <ul>
+    <ul class="list-group">
         @foreach(var service in Model.OfferedServices) {
-            <li class="d-flex align-items-center">
+            <li class="list-group-item d-flex align-items-center">
                 @service.Hairdresser?.Fname @service.Hairdresser?.Lname
 
                 <form method="post" asp-action="DeleteOfferedService">

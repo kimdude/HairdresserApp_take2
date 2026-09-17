@@ -4,7 +4,7 @@
 @model BookingViewModel
 
 @{
-    /* View over bookings-form for customers */
+    /* View to add booking */
     
     ViewData["Title"] = "Boka tid";
 }
@@ -26,6 +26,8 @@
 
     <form method="post" class="createBookingForm">
 
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
         <!-- Hidden service Id -->
         <input type="hidden" asp-for="ServiceId" value="@Model.ServiceId"/>
 
@@ -36,10 +38,10 @@
             if(Model.BookingStep == 1) 
             {
 
-                @* Hairdresser selection *@
-                <div>
+                <!-- Hairdresser selection -->
+                <div class="my-3">
                     <label asp-for="SelectedHairdresserId" class="form-label">Frisör: </label>
-                    <select asp-for="SelectedHairdresserId" asp-items="Model.Hairdressers" class="form-control">
+                    <select asp-for="SelectedHairdresserId" asp-items="Model.Hairdressers" class="form-select">
                         <option value="">Välj frisör</option>
                     </select>
                     <span asp-validation-for="SelectedHairdresserId" class="text-danger"></span>
@@ -54,8 +56,8 @@
                 <!-- Hidden input for hairdresser -->
                 <input type="hidden" asp-for="SelectedHairdresserId" value="@Model.SelectedHairdresserId"/>
 
-                @* Time and date selection *@
-                <div class="table-responsive">
+                <!-- Time and date selection -->
+                <div class="table-responsive my-4">
                     <table class="table table-striped-columns">
                         <thead>
                             <tr class="text-center">
@@ -81,10 +83,8 @@
                                         <td>Ej tillgänglig</td>
                                     }
                                     else {
-                                        <td>
-                                            <div class="d-grid gap-2 col-6 mx-auto">
-                                                <button class="btn btn-green" name="SelectedDateAndTime" value="@selectedTime">@hour</button>
-                                            </div>
+                                        <td class="text-center">
+                                            <button class="btn btn-green" name="SelectedDateAndTime" value="@selectedTime">@hour</button>
                                         </td>
                                     }
                                 }
@@ -103,7 +103,7 @@
                 <input type="hidden" asp-for="SelectedDateAndTime" value="@Model.SelectedDateAndTime"/>
 
                 @* Email input *@
-                <div>
+                <div class="my-3">
                     <label asp-for="Email" class="form-label">E-postadress: </label>
                     <input asp-for="Email" class="form-control"/>
                     <span asp-validation-for="Email"  class="text-danger"></span>

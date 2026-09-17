@@ -1,7 +1,7 @@
 @model HairdresserApp.Models.Hairdresser
     
 @{
-    /* View to update service */
+    /* View to update hairdresser */
 
     ViewData[index: "Title"] = "Uppdatera frisör";
 }
@@ -11,7 +11,7 @@
 
     <form asp-action="UpdateHairdresser" method="post">
 
-        <div asp-validation-summary="ModelOnly"></div>
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="hidden" asp-for="Id" />
          
         <div>

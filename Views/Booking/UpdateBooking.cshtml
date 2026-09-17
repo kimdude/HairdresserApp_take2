@@ -2,7 +2,7 @@
 @model HairdresserApp.ViewModels.UpdateBookingViewModel
 
 @{
-    /* View to update service */
+    /* View to update booking */
     ViewData[index: "Title"] = "Omboka";
 }
 
@@ -21,23 +21,21 @@
 
     <form asp-action="UpdateBooking" method="post">
 
-        <div asp-validation-summary="ModelOnly"></div>
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
+        <!-- Hidden inputs -->
         <input type="hidden" asp-for="BookingId" value="@Model.BookingId"/>
         <input type="hidden" asp-for="BookingStep" value="@Model.BookingStep"/>
         <input type="hidden" asp-for="ServiceTitle" value="@Model.ServiceTitle"/>
         <input type="hidden" asp-for="ServicePrice" value="@Model.ServicePrice"/>
         <input type="hidden" asp-for="Email" value="@Model.Email"/>
-         
-        <!-- Hidden booking step -->
-        <input type="hidden" name="BookingStep" value="@Model.BookingStep"/>
 
         @if(Model.BookingStep == 1) 
         {
             <input type="hidden" asp-for="SelectedDateAndTime" value="@Model.SelectedDateAndTime"/>
 
             @* Hairdresser selection *@
-            <div>
+            <div class="my-3">
                 <label asp-for="SelectedHairdresserId" class="form-label">Frisör: </label>
                 <select asp-for="SelectedHairdresserId" asp-items="Model.Hairdressers" class="form-select">
                 </select>
@@ -53,7 +51,7 @@
             <input type="hidden" asp-for="SelectedHairdresserId" value="@Model.SelectedHairdresserId"/>
 
             @* Time and date selection *@
-            <div class="table-responsive">
+            <div class="table-responsive my-3"">
                 <table class="table table-striped-columns">
                     <thead>
                         <tr class="text-center">
@@ -76,20 +74,16 @@
                                 bool unavailable = bookedHours.Any(booking => booking == selectedTime); //Checking if datetime already is booked
 
                                 @if(selectedTime == Model.SelectedDateAndTime) {
-                                    <td>
-                                        <div class="d-grid gap-2 col-6 mx-auto">
-                                            <button class="btn btn-outline-secondary" name="SelectedDateAndTime" value="@selectedTime">@hour</button>
-                                        </div>
+                                    <td class="text-center">
+                                        <button class="btn btn-outline-secondary" name="SelectedDateAndTime" value="@selectedTime">@hour</button>
                                     </td>
                                 }
                                 else if(selectedTime < DateTime.Now || unavailable) { 
                                     <td>Ej tillgänglig</td>
                                 }
                                 else {
-                                    <td>
-                                        <div class="d-grid gap-2 col-6 mx-auto">
-                                            <button class="btn btn-green" name="SelectedDateAndTime" value="@selectedTime">@hour</button>
-                                        </div>
+                                    <td class="text-center">
+                                        <button class="btn btn-green" name="SelectedDateAndTime" value="@selectedTime">@hour</button>
                                     </td>
                                 }
                             }
