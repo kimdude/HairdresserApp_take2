@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace HairdresserApp.Controllers;
 
@@ -31,30 +32,14 @@ public class HairdresserController : Controller
     [Authorize]
     public async Task<IActionResult> GetHairdressers()
     {
-        // Getting all hairdressers
+        //Getting all hairdressers
         var hairdressers = await _context.Hairdressers!.Include(hairdresser => hairdresser.User).ToListAsync();
-        
+
+        //Getting current user Id
+        string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        ViewBag.userId = userId;
+
         return View(hairdressers);
-    }
-
-    //Getting specific hairdresser
-    [Authorize]
-    public async Task<IActionResult> HairdresserDetails(int? id)
-    {
-        if(id == null)
-        {
-            return NotFound();
-        }
-
-        // Getting all hairdressers
-        var hairdresser = await _context.Hairdressers!.Include(h => h.OfferedServices).FirstOrDefaultAsync(m => m.Id == id);
-
-        if(hairdresser == null)
-        {
-            return NotFound();
-        }
-        
-        return View(hairdresser);
     }
 
     /* EDIT */
@@ -69,7 +54,14 @@ public class HairdresserController : Controller
             return NotFound();
         }
 
-        return View(hairdresser);
+        HairdresserViewModel hairdresserVm = new HairdresserViewModel
+        {
+            Id = hairdresser.Id,
+            Fname = hairdresser.Fname,
+            Lname = hairdresser.Lname
+        };
+
+        return View(hairdresserVm);
     }
 
     //Update hairdresser
@@ -80,25 +72,23 @@ public class HairdresserController : Controller
     {
         if(ModelState.IsValid)
         {
-            if(ModelState.IsValid)
+
+            //Checking for hairdresser
+            Hairdresser? existingHairdresser = await _context.Hairdressers!.FirstOrDefaultAsync(hairdresser => hairdresser.Id == hairdresserVm.Id);
+
+            if(existingHairdresser == null)
             {
-
-                //Checking for hairdresser
-                Hairdresser? existingHairdresser = await _context.Hairdressers!.FirstOrDefaultAsync(hairdresser => hairdresser.Id == hairdresserVm.Id);
-
-                if(existingHairdresser == null)
-                {
-                    return NotFound();
-                }
-
-                //Updating only fname and lname
-                existingHairdresser.Fname = hairdresserVm.Fname!;
-                existingHairdresser.Lname = hairdresserVm.Lname!;
-
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
 
-            return RedirectToAction(nameof(GetHairdressers));
+            //Updating only fname and lname
+            existingHairdresser.Fname = hairdresserVm.Fname!;
+            existingHairdresser.Lname = hairdresserVm.Lname!;
+
+            await _context.SaveChangesAsync();
+        
+
+        return RedirectToAction(nameof(GetHairdressers));
         }
 
         return View(hairdresserVm);
@@ -115,6 +105,16 @@ public class HairdresserController : Controller
 
         if(hairdresser != null)
         {
+
+            //Comparing to current user Id
+            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            ViewBag.userId = userId;
+
+            if(userId == hairdresser.UserId)
+            {
+                return Forbid();
+            }
+
             //Finding user
             IdentityUser? user = await _userManager.FindByIdAsync(hairdresser.UserId);
             
@@ -133,9 +133,4 @@ public class HairdresserController : Controller
         return RedirectToAction(nameof(GetHairdressers));
     }
 
-    //Function to validate hairdresser ID
-    private bool HairdresserExists(int id)
-    {
-        return _context.Hairdressers!.Any(e => e.Id == id);
-    }
 }

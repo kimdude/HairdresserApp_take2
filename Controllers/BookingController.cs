@@ -35,7 +35,7 @@ public class BookingController : Controller
     [Authorize]
     public async Task<IActionResult> GetBookings()
     {
-        //Getting all bookings
+        //Getting bookings
         List<Booking> bookings = await _context.Booking.Where(booking => booking.DateAndTime >= DateTime.Today && booking.DateAndTime < DateTime.Today.AddDays(1)).Include(booked => booked.BookedServices).ThenInclude(service => service.Service).Include(booked => booked.Hairdresser).Include(booked => booked.Customer).OrderBy(booking => booking.DateAndTime).ToListAsync();
         ViewBag.Hairdressers = new SelectList(_context.Hairdressers, "Id", "Fname");
 
@@ -83,32 +83,15 @@ public class BookingController : Controller
         return View(bookings);
     }
 
-    //Get specific booking
-    [Authorize]
-    public async Task<IActionResult> GetBooking(int? id)
-    {
-        if(id == null)
-        {
-            return NotFound();
-        }
-
-        var booking = await _context.Booking.Include(booked => booked.BookedServices).Include(booked => booked.Hairdresser).Include(booked => booked.Customer).FirstOrDefaultAsync(m => m.Id == id);
-
-        if(booking == null)
-        {
-            return NotFound();
-        }
-
-        return View(booking);
-        
-    }
-
     /* CREATE */
     //Returning view to bookingform
     public IActionResult CreateBooking(int serviceId, string serviceTitle)
     {
         
         BookingViewModel bookingVm = new BookingViewModel();
+
+        //Getting hairdresser that offer the service
+        
 
         bookingVm.Hairdressers = new SelectList(_context.Hairdressers, "Id", "Fname");
         bookingVm.ServiceId = serviceId;

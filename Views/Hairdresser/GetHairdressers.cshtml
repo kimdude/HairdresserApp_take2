@@ -2,8 +2,9 @@
     
 @{
     /* View over hairdressers */
-
     ViewData[index: "Title"] = "Frisörer";
+
+    Console.WriteLine(ViewBag.userId);
 }
 
 <section class="m-4">
@@ -16,10 +17,13 @@
                 <p class="card-text">@hairdresser.User.Email</p>
 
                 <div class="d-flex align-items-center gap-2">
-                    <form asp-action="DeleteHairdresser" method="post">
-                        <input type="hidden" name="id" value="@hairdresser.Id" />
-                        <input class="btn btn-link text-danger p-0" type="submit" value="Ta bort" />
-                    </form>
+
+                    @if(ViewBag.userId != hairdresser.UserId) {
+                        <form asp-action="DeleteHairdresser" method="post">
+                            <input type="hidden" name="id" value="@hairdresser.Id" />
+                            <input class="btn btn-link text-danger p-0" type="submit" value="Ta bort" />
+                        </form>
+                    }
 
                     <a class="text-dark" asp-action="UpdateHairdresser" asp-route-id="@hairdresser.Id">Redigera</a>
                 </div>      
