@@ -9,6 +9,8 @@ public class Service
     //Properties
     public int Id { get; set; }
 
+    public bool IsActive { get; set; } = true;
+
     [Required(ErrorMessage = "Titeln måste vara 3-35 tecken lång.")]
     [MaxLength(35), MinLength(3)]
     public required string Title { get; set; }

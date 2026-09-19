@@ -143,6 +143,9 @@ namespace HairdresserApp.Data.Migrations
                     b.Property<int>("Duration")
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
                     b.Property<decimal>("Price")
                         .HasColumnType("TEXT");
 

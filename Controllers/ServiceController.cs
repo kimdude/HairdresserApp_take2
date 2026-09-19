@@ -4,7 +4,6 @@ using HairdresserApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace HairdresserApp.Controllers;
 
@@ -25,7 +24,7 @@ public class ServiceController : Controller
     [Authorize]
     public async Task<IActionResult> GetServices()
     {
-        var services = await _context.Services!.Include(service => service.OfferedServices).ThenInclude(offeredService => offeredService.Hairdresser).ToListAsync();
+        var services = await _context.Services!.Include(service => service.OfferedServices).ThenInclude(offeredService => offeredService.Hairdresser).Where(service => service.IsActive == true).ToListAsync();
 
         //Return OfferedServices
         return View(services);
@@ -187,19 +186,13 @@ public class ServiceController : Controller
 
         if(service != null)
         {
+            Console.WriteLine(service.IsActive);
 
-            //Checking if service has bookings
-            BookedService? bookings = await _context.BookedServices!.FirstOrDefaultAsync(service => service.ServiceId == id);
-
-            if(bookings != null)
-            {
-                TempData["message"] = "Kan inte radera tjänsten på grund av bokningar.";
-                return RedirectToAction(nameof(GetServices));
-            }
-
-            //Deleting service
-           _context.Services.Remove(service);
+            //Soft deleting service
+           service.IsActive = false;
            TempData["message"] = "Tjänsten har raderats.";
+
+           Console.WriteLine(service.IsActive);
         }
 
         await _context.SaveChangesAsync();

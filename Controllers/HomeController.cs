@@ -20,7 +20,7 @@ public class HomeController : Controller
     //Homepage view
     public async Task<IActionResult> Index()
     {
-        var OfferedServices = await _context.Services!.Where(service => service.OfferedServices.Any()).Include(service => service.OfferedServices).ThenInclude(offeredService => offeredService.Hairdresser).ToListAsync();
+        var OfferedServices = await _context.Services!.Where(service => service.OfferedServices.Any() && service.IsActive == true).Include(service => service.OfferedServices).ThenInclude(offeredService => offeredService.Hairdresser).ToListAsync();
         return View(OfferedServices);
     }
 
