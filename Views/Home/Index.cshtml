@@ -25,7 +25,7 @@
                             <!-- Service details -->
                             <div class="d-flex gap-3">
                                 <p class="card-text">Tid: @service.Duration min</p>
-                                <p class="card-text">Pris: @Math.Round(service.Price) kr</p>
+                                <p class="card-text">Pris: @Math.Round(service.Price ?? 0) kr</p>
                             </div>
 
                             <!-- Service description -->

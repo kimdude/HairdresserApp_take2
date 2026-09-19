@@ -14,13 +14,14 @@
 
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-        <!-- Hidden service Id -->
+        <!-- Hidden inputs -->
         <input type="hidden" asp-for="ServiceId" value="@ViewBag.ServiceId"/>
+        <input type="hidden" name="ServiceTitle" value="@ViewBag.ServiceTitle"/>
 
         <div>
             <label asp-for="HairdresserId" class="form-label">Frisör: </label>
             <select asp-for="HairdresserId" asp-items="ViewBag.Hairdresser" class="form-select">
-                <option value="" selected disabled>Välj</option>
+                <option value="0" selected disabled>Välj</option>
             </select>
             <span asp-validation-for="HairdresserId" class="text-danger"></span>
         </div>

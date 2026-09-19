@@ -8,6 +8,15 @@
 }
 
 <section class="m-4">
-    <h1 class="text-center">Tack för din bokning!</h1>
-    <p class="text-center">Bokningsbekräftelse skickas till <strong>@Model.Email</strong>.</p>
+    <!-- Meddelanden -->
+    @if(TempData["message"] != null) {
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            @TempData["message"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Stäng"></button>
+        </div>
+    } else
+    {
+        <h1 class="text-center">Tack för din bokning!</h1>
+        <p class="text-center">Bokningsbekräftelse skickas till <strong>@Model.Email</strong>.</p>
+    }
 </section>

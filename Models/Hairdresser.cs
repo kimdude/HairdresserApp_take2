@@ -10,11 +10,11 @@ public class Hairdresser
     //Properties
     public int Id { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "Ange förnamn")]
     [MaxLength(30)]
     public required string Fname { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "Ange efternamn")]
     [MaxLength(40)]
     public required string Lname { get; set; }
 

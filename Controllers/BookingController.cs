@@ -85,15 +85,15 @@ public class BookingController : Controller
 
     /* CREATE */
     //Returning view to bookingform
-    public IActionResult CreateBooking(int serviceId, string serviceTitle)
+    public async Task<IActionResult> CreateBooking(int serviceId, string serviceTitle)
     {
         
         BookingViewModel bookingVm = new BookingViewModel();
 
-        //Getting hairdresser that offer the service
-        
+        //Getting hairdresser that offer the given service
+        List<Hairdresser> hairdresser = await _context.Hairdressers!.Where(hairdresser => hairdresser.OfferedServices.Any(offeredService => offeredService.ServiceId == serviceId)).ToListAsync();
 
-        bookingVm.Hairdressers = new SelectList(_context.Hairdressers, "Id", "Fname");
+        bookingVm.Hairdressers = new SelectList(hairdresser, "Id", "Fname");
         bookingVm.ServiceId = serviceId;
         bookingVm.ServiceTitle = serviceTitle;
         
@@ -175,11 +175,21 @@ public class BookingController : Controller
                     bookingVm.CustomerId = existingCustomer.Id;
                     bookingVm.CustomerFname = existingCustomer.Fname;
                     bookingVm.CustomerLname = existingCustomer.Lname;
-    
-                }
 
-                //Set step
-                bookingVm.BookingStep = 4;
+                    //Getting hairdresser name
+                    ViewData["Hairdresser"] = await GetHairdresserName(bookingVm.SelectedHairdresserId);
+
+                    //Getting service price
+                    bookingVm.ServicePrice = await GetServicePrice(bookingVm.ServiceId) ?? 0;
+
+                    bookingVm.BookingStep = 5;
+    
+                } 
+                else
+                {
+                    //Set step
+                    bookingVm.BookingStep = 4;
+                }
 
             }
         } 
@@ -189,16 +199,10 @@ public class BookingController : Controller
             if(ModelState.IsValid)
             {
                 //Getting hairdresser name
-                var hairdresser = await _context.Hairdressers!.SingleAsync(hairdresser => hairdresser.Id == bookingVm.SelectedHairdresserId);
-                var hairdresserName = hairdresser.Fname + " " + hairdresser.Lname;
-
-                ViewData["Hairdresser"] = hairdresserName;
+                ViewData["Hairdresser"] = await GetHairdresserName(bookingVm.SelectedHairdresserId);
 
                 //Getting service price
-                var service = await _context.Services!.SingleAsync(service => service.Id == bookingVm.ServiceId);
-                var servicePrice = service.Price;
-
-                bookingVm.ServicePrice = servicePrice;
+                bookingVm.ServicePrice = await GetServicePrice(bookingVm.ServiceId) ?? 0;
 
                 //Set step
                 bookingVm.BookingStep = 5;
@@ -223,6 +227,15 @@ public class BookingController : Controller
                     await _context.SaveChangesAsync();
 
                     bookingVm.CustomerId = customer.Id;
+                }
+
+                //Validating time is available with given hairdresser
+                Booking? unavailable = _context.Booking!.FirstOrDefault(booking => booking.DateAndTime == bookingVm.SelectedDateAndTime && bookingVm.SelectedHairdresserId == booking.HairdresserId);
+
+                if(unavailable != null)
+                {
+                    TempData["message"] = "Tiden är inte längre tillgänglig. Vänligen välj en annan tid.";
+                    return View(nameof(ConfirmBooking), bookingVm);
                 }
 
                 //Save booking
@@ -293,12 +306,16 @@ public class BookingController : Controller
 
         bookingVm.BookingId = id;
         bookingVm.ServiceTitle = booking.BookedServices.First().Service!.Title;
-        bookingVm.ServicePrice = booking.BookedServices.First().Service!.Price;
+        bookingVm.ServicePrice = booking.BookedServices.First().Service!.Price ?? 0;
 
         bookingVm.SelectedDateAndTime = booking.DateAndTime;
 
         bookingVm.SelectedHairdresserId = booking.HairdresserId;
-        bookingVm.Hairdressers = new SelectList(_context.Hairdressers, "Id", "Fname");
+
+        //Getting hairdresser that offer the given service
+        List<Hairdresser> hairdresser = await _context.Hairdressers!.Where(hairdresser => hairdresser.OfferedServices.Any(offeredService => offeredService.ServiceId == booking.BookedServices.First().ServiceId)).ToListAsync();
+        bookingVm.Hairdressers = new SelectList(hairdresser, "Id", "Fname");
+
         bookingVm.Email = booking.Customer!.Email;
 
         return View(bookingVm);
@@ -393,10 +410,47 @@ public class BookingController : Controller
         if(booking != null)
         {
             _context.Booking.Remove(booking);
+            await _context.SaveChangesAsync();
+
+            TempData["message"] = "Tiden är avbokad. Mejl har skickats till kunden.";
+            
         }
 
-        await _context.SaveChangesAsync();
         return RedirectToAction(nameof(GetBookings));
     }
+    
+    //Function to get hairdresser name
+    private async Task<string> GetHairdresserName(int? id)
+    {
+
+        if(id == null)
+        {
+            return "";
+        }
+
+        //Getting hairdresser name
+        Hairdresser? hairdresser = await _context.Hairdressers!.SingleOrDefaultAsync(hairdresser => hairdresser.Id == id);
+
+        if(hairdresser == null)
+        {
+            return "";
+        }
+
+        var hairdresserName = hairdresser.Fname + " " + hairdresser.Lname;
+        
+        return hairdresserName;
+    }
+
+    //Function to get service prive
+    private async Task<decimal?> GetServicePrice(int id)
+    {
+        //Getting hairdresser name
+        Service? service = await _context.Services!.SingleOrDefaultAsync(service => service.Id == id);
+
+        Console.WriteLine("Pris:");
+        Console.WriteLine(service?.Price);
+        return service?.Price ?? 0;
+    }
+
 
 }

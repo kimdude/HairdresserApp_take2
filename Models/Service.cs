@@ -17,11 +17,13 @@ public class Service
     public string? Description { get; set; }
 
     [Required(ErrorMessage = "Ange pris.")]
+    [Range(1, 10000, ErrorMessage = "Ange pris.")]
     [DataType(DataType.Currency)]
-    public decimal Price { get; set; }
+    public decimal? Price { get; set; }
 
     [Required(ErrorMessage = "Ange tidsspann.")]
-    public required int Duration { get; set; }
+    [Range(1, 600, ErrorMessage = "Ange tidsspann.")]
+    public required int? Duration { get; set; }
 
     //Dependants
     public ICollection<OfferedService> OfferedServices { get; } = new List<OfferedService>();

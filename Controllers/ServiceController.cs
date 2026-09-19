@@ -4,6 +4,7 @@ using HairdresserApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace HairdresserApp.Controllers;
 
@@ -94,17 +95,36 @@ public class ServiceController : Controller
     [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> AddOfferedService([Bind("HairdresserId,ServiceId")] OfferedService offeredService)
+    public async Task<IActionResult> AddOfferedService(string ServiceTitle,[Bind("HairdresserId,ServiceId")] OfferedService offeredService)
     {
+        Console.Write("Test: ");
+
+        foreach(var entry in ModelState)
+        {
+            foreach(var error in entry.Value.Errors)
+            Console.WriteLine($"{entry.Key}: {error.ErrorMessage}");
+        }
+
         if (ModelState.IsValid)
         {
             _context.Add(offeredService);
 
             await _context.SaveChangesAsync();
+            TempData["message"] = "Tjänsten har uppdaterats.";
+
             return RedirectToAction(nameof(GetServices));
+        } 
+        else
+        {
+            //Getting hairdresser that don't already offer the service
+            List<Hairdresser> hairdressers = await _context.Hairdressers!.Where(hairdresser => !hairdresser.OfferedServices.Any(os => os.ServiceId == offeredService.ServiceId)).ToListAsync();
+
+            ViewData["Hairdresser"] = new SelectList(hairdressers, "Id", "Fname");
+            ViewBag.ServiceId = offeredService.ServiceId;
+            ViewBag.ServiceTitle = ServiceTitle; 
         }
 
-        return View();
+        return View(offeredService);
     }
 
     /* EDIT */
@@ -149,6 +169,7 @@ public class ServiceController : Controller
                 }
             }
 
+            TempData["message"] = "Tjänsten har uppdaterats.";
             return RedirectToAction(nameof(GetServices));
         }
 
@@ -162,11 +183,23 @@ public class ServiceController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteService(int id)
     {
-        var service = await _context.Services!.FindAsync(id);
+        Service? service = await _context.Services!.FindAsync(id);
 
         if(service != null)
         {
+
+            //Checking if service has bookings
+            BookedService? bookings = await _context.BookedServices!.FirstOrDefaultAsync(service => service.ServiceId == id);
+
+            if(bookings != null)
+            {
+                TempData["message"] = "Kan inte radera tjänsten på grund av bokningar.";
+                return RedirectToAction(nameof(GetServices));
+            }
+
+            //Deleting service
            _context.Services.Remove(service);
+           TempData["message"] = "Tjänsten har raderats.";
         }
 
         await _context.SaveChangesAsync();
@@ -185,6 +218,8 @@ public class ServiceController : Controller
         {
             _context.OfferedServices.Remove(offeredService);
             await _context.SaveChangesAsync();
+
+            TempData["message"] = "Tjänsten har uppdaterats.";
         }
 
         return RedirectToAction(nameof(GetServices));

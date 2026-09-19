@@ -26,7 +26,7 @@
     @* Service details *@
     <div class="d-flex gap-3">
         <p>Tid: @Model.Duration min</p>
-        <p>Pris: @Math.Round(Model.Price) kr</p>
+        <p>Pris: @Math.Round(Model.Price ?? 0) kr</p>
     </div>
 
     @* Service description *@

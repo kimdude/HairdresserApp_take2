@@ -6,6 +6,14 @@
 
 <section class="m-4">
     <h1>Bokningar</h1>
+    
+    <!-- Meddelanden -->
+    @if(TempData["message"] != null) {
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            @TempData["message"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Stäng"></button>
+        </div>
+    }
 
     @* Filter *@
     <form asp-action="GetBookings" method="post" id="filterForm" class="d-flex align-items-center mb-4">
