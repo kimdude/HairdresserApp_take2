@@ -260,12 +260,21 @@ public class BookingController : Controller
                 _context.BookedServices!.Add(bookedService);
                 await _context.SaveChangesAsync();
 
-                //Check if everything succeeded
-                
-            
-                
+                //Constructing email content
+                string mailBody = $"""
+                    <html>
+                        <body>
+                            <h1>Bokningsbekräftelse</h1>
+                            <p>Du har bokat tid för {bookingVm.ServiceTitle!}.</p>
+                            <p><strong>Datum: </strong>{bookingVm.SelectedDateAndTime.ToString("dd MMMM yyyy", new CultureInfo("sv-SE"))}</p>
+                            <p><strong>Tid: </strong>{bookingVm.SelectedDateAndTime.ToString("HH:mm", new CultureInfo("sv-SE"))}</p>
+                            <p><strong>Pris: </strong>{bookingVm.ServicePrice} kr</p>
+                        </body>
+                    </html>
+                    """;
+
                 //Sending email
-                await _emailSender.SendEmailAsync(bookingVm.Email!, bookingVm.SelectedDateAndTime, bookingVm.ServiceTitle!, bookingVm.ServicePrice);
+                await _emailSender.SendEmailAsync(bookingVm.Email!, mailBody);
 
                 return View(nameof(ConfirmBooking), bookingVm);
             }
@@ -383,11 +392,21 @@ public class BookingController : Controller
 
                 await _context.SaveChangesAsync();                
                 
-                //Check if everything succeeded
-            
+                //Constructing email content
+                string mailBody = $"""
+                    <html>
+                        <body>
+                            <h1>Ombokning</h1>
+                            <p>Din bokning för {updateBookingVm.ServiceTitle!} har fått en ny tid.</p>
+                            <p><strong>Datum: </strong>{updateBookingVm.SelectedDateAndTime.ToString("dd MMMM yyyy", new CultureInfo("sv-SE"))}</p>
+                            <p><strong>Tid: </strong>{updateBookingVm.SelectedDateAndTime.ToString("HH:mm", new CultureInfo("sv-SE"))}</p>
+                            <p><strong>Pris: </strong>{updateBookingVm.ServicePrice} kr</p>
+                        </body>
+                    </html>
+                    """;
                 
                 //Sending email
-                await _emailSender.SendEmailAsync(updateBookingVm.Email!, updateBookingVm.SelectedDateAndTime, updateBookingVm.ServiceTitle!, updateBookingVm.ServicePrice);
+                await _emailSender.SendEmailAsync(updateBookingVm.Email!, mailBody);
 
                 updateBookingVm.BookingStep = 3;
                 
@@ -406,15 +425,35 @@ public class BookingController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteBooking(int id)
     {
-        var booking = await _context.Booking.FindAsync(id);
-        if(booking != null)
+        var booking = await _context.Booking.Include(booking => booking.BookedServices).ThenInclude(bookedService => bookedService.Service).Include(booking => booking.Customer).FirstOrDefaultAsync(booking => booking.Id == id);
+        if(booking == null)
         {
-            _context.Booking.Remove(booking);
-            await _context.SaveChangesAsync();
-
-            TempData["message"] = "Tiden är avbokad. Mejl har skickats till kunden.";
-            
+            return NotFound();
         }
+
+        _context.Booking.Remove(booking);
+        await _context.SaveChangesAsync();
+
+        //Constructing email content
+        string customerEmail = booking.Customer!.Email;
+        string mailBody = $"""
+            <html>
+                <body>
+                    <h1>Avbokad tid</h1>
+                    <p>
+                        Din tid för {booking.BookedServices.First().Service!.Title} den 
+                        <strong>{booking.DateAndTime.ToString("dd'/'MM", new CultureInfo("sv-SE"))}, kl. {booking.DateAndTime.ToString("HH:mm", new CultureInfo("sv-SE"))}</strong> 
+                        har avbokats.
+                    </p>
+                    <p>Vid felaktig avbokning vänligen kontakta oss via 070-123 45 67.</p>
+                </body>
+            </html>
+            """;
+
+        //Sending email
+        await _emailSender.SendEmailAsync(customerEmail, mailBody);
+
+        TempData["message"] = "Tiden är avbokad. Mejl har skickats till kunden.";
 
         return RedirectToAction(nameof(GetBookings));
     }
@@ -447,8 +486,6 @@ public class BookingController : Controller
         //Getting hairdresser name
         Service? service = await _context.Services!.SingleOrDefaultAsync(service => service.Id == id);
 
-        Console.WriteLine("Pris:");
-        Console.WriteLine(service?.Price);
         return service?.Price ?? 0;
     }
 

@@ -19,7 +19,7 @@ public class EmailService : IEmailSender
     }
 
     //Sending emails
-    public Task SendEmailAsync(string email, DateTime dateAndTime, string serviceTitel, decimal servicePrice)
+    public Task SendEmailAsync(string email, string mailBody)
     {
 
         /* Properties from .NET user secrets */
@@ -28,27 +28,13 @@ public class EmailService : IEmailSender
         var host = _configuration["EmailSettings:Host"];
         var port = int.Parse(_configuration["EmailSettings:Port"]!);
 
-        /* Constructing email */
-        string date = dateAndTime.ToString("dd MMMM yyyy", new CultureInfo("sv-SE"));
-        string time = dateAndTime.ToString("HH:mm", new CultureInfo("sv-SE"));
-
         MailMessage message = new MailMessage();
         message.IsBodyHtml = true;
         message.Subject =  "Bokningsbekräftelse";
         message.From = new MailAddress(mail!);
         message.To.Add(new MailAddress(email));
 
-        message.Body = $"""
-        <html>
-            <body>
-                <h1>Bokningsbekräftelse</h1>
-                <p>Du har bokat tid för {serviceTitel}.</p>
-                <p><strong>Datum: </strong>{date}</p>
-                <p><strong>Tid: </strong>{time}</p>
-                <p><strong>Pris: </strong>{servicePrice} kr</p>
-            </body>
-        </html>
-        """;
+        message.Body = mailBody;
 
         /* Connecting to Smtp Server */
         SmtpClient client = new SmtpClient(host, port)
