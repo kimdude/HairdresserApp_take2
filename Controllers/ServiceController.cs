@@ -26,6 +26,11 @@ public class ServiceController : Controller
     {
         var services = await _context.Services!.Include(service => service.OfferedServices).ThenInclude(offeredService => offeredService.Hairdresser).Where(service => service.IsActive == true).ToListAsync();
 
+        if(services == null)
+        {
+            return NotFound();
+        }
+        
         //Return OfferedServices
         return View(services);
     }
