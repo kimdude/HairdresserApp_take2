@@ -101,13 +101,6 @@ public class ServiceController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddOfferedService(string ServiceTitle,[Bind("HairdresserId,ServiceId")] OfferedService offeredService)
     {
-        Console.Write("Test: ");
-
-        foreach(var entry in ModelState)
-        {
-            foreach(var error in entry.Value.Errors)
-            Console.WriteLine($"{entry.Key}: {error.ErrorMessage}");
-        }
 
         if (ModelState.IsValid)
         {
@@ -191,13 +184,11 @@ public class ServiceController : Controller
 
         if(service != null)
         {
-            Console.WriteLine(service.IsActive);
 
             //Soft deleting service
            service.IsActive = false;
            TempData["message"] = "Tjänsten har raderats.";
 
-           Console.WriteLine(service.IsActive);
         }
 
         await _context.SaveChangesAsync();
