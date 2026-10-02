@@ -1,7 +1,5 @@
 using System.Globalization;
-using HairdresserApp.Data;
-using HairdresserApp.Models;
-using Microsoft.EntityFrameworkCore;
+
 namespace HairdresserApp.Services;
 
 /* Class to setup calendar */
@@ -12,15 +10,15 @@ public class SetupCalender
     public int GetWeek()
     {
         //Calendar instance
-        CultureInfo myCI = new CultureInfo("sv-EU");
-        Calendar myCal = myCI.Calendar;
+        CultureInfo seCI = new CultureInfo("sv-SE");
+        Calendar seCal = seCI.Calendar;
 
         //Properties required for getweekofyear method
-        CalendarWeekRule myCWR = myCI.DateTimeFormat.CalendarWeekRule;
-        DayOfWeek myFirstDOW = myCI.DateTimeFormat.FirstDayOfWeek;
+        CalendarWeekRule seCWR = seCI.DateTimeFormat.CalendarWeekRule;
+        DayOfWeek seFirstDOW = seCI.DateTimeFormat.FirstDayOfWeek;
         DateTime currentDate = DateTime.Now;
 
-        return myCal.GetWeekOfYear(currentDate, myCWR, myFirstDOW);
+        return seCal.GetWeekOfYear(currentDate, seCWR, seFirstDOW);
     }
 
     //Getting days of given week
@@ -44,7 +42,7 @@ public class SetupCalender
             monday = date.AddDays(-daysSinceMonday); // Subtracting days to get previous monday
         }
 
-        var daysThisWeek = Enumerable.Range(0,5) //Sequence of integers
+        List<DateTime> daysThisWeek = Enumerable.Range(0,5) //Sequence of integers
             .Select(d => monday.AddDays(d)) //Adding given integer to day
             .ToList(); // Making list of days
 

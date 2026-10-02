@@ -20,8 +20,6 @@ public class BookingViewModel
     public int? SelectedHairdresserId { get; set; } 
 
     //Time selection
-    public List<DateTime>? DateAndTime { get; set; }
-
     [Display(Name = "Välj tid")]
     public DateTime SelectedDateAndTime { get; set; } 
 

@@ -1,17 +1,12 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using HairdresserApp.Models;
 using HairdresserApp.ViewModels;
-using Microsoft.VisualBasic;
 using HairdresserApp.Data;
-using SQLitePCL;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using HairdresserApp.Services;
-using Microsoft.CodeAnalysis.Elfie.Serialization;
 using HairdresserApp.Interfaces;
-using System.Net.Mail;
 using Microsoft.AspNetCore.Authorization;
 
 namespace HairdresserApp.Controllers;
@@ -425,12 +420,15 @@ public class BookingController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteBooking(int id)
     {
+        //Checking for booking
         var booking = await _context.Booking.Include(booking => booking.BookedServices).ThenInclude(bookedService => bookedService.Service).Include(booking => booking.Customer).FirstOrDefaultAsync(booking => booking.Id == id);
         if(booking == null)
         {
             return NotFound();
         }
 
+        //Deleting booking
+        _context.BookedServices?.RemoveRange(booking.BookedServices);
         _context.Booking.Remove(booking);
         await _context.SaveChangesAsync();
 
