@@ -1,14 +1,9 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using HairdresserApp.Models;
 using HairdresserApp.ViewModels;
-using Microsoft.VisualBasic;
 using HairdresserApp.Data;
-using SQLitePCL;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
@@ -33,7 +28,7 @@ public class HairdresserController : Controller
     public async Task<IActionResult> GetHairdressers()
     {
         //Getting all hairdressers
-        var hairdressers = await _context.Hairdressers!.Include(hairdresser => hairdresser.User).ToListAsync();
+        List<Hairdresser> hairdressers = await _context.Hairdressers!.Include(hairdresser => hairdresser.User).ToListAsync();
 
         //Getting current user Id
         string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -68,7 +63,7 @@ public class HairdresserController : Controller
     [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UpdateHairdresser([Bind("Id, Fname, Lname")] HairdresserViewModel hairdresserVm)
+    public async Task<IActionResult> UpdateHairdresser(HairdresserViewModel hairdresserVm)
     {
         if(ModelState.IsValid)
         {
@@ -103,33 +98,33 @@ public class HairdresserController : Controller
     {
         var hairdresser = await _context.Hairdressers!.FindAsync(id);
 
-        if(hairdresser != null)
+        if(hairdresser == null)
         {
-
-            //Comparing to current user Id
-            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            ViewBag.userId = userId;
-
-            if(userId == hairdresser.UserId)
-            {
-                return Forbid();
-            }
-
-            //Finding user
-            IdentityUser? user = await _userManager.FindByIdAsync(hairdresser.UserId);
-            
-            //Deleting hairdresser
-            _context.Hairdressers.Remove(hairdresser);
-            await _context.SaveChangesAsync();
-
-            //Deleting user
-            if(user != null)
-            {
-                await _userManager.DeleteAsync(user);
-            }
-
+            return NotFound();
         }
 
+        //Comparing to current user Id
+        string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        ViewBag.userId = userId;
+
+        if(userId == hairdresser.UserId)
+        {
+            return Forbid();
+        }
+
+        //Finding user
+        IdentityUser? user = await _userManager.FindByIdAsync(hairdresser.UserId);
+        
+        //Deleting hairdresser
+        _context.Hairdressers.Remove(hairdresser);
+        await _context.SaveChangesAsync();
+
+        //Deleting user
+        if(user != null)
+        {
+            await _userManager.DeleteAsync(user);
+        }
+    
         return RedirectToAction(nameof(GetHairdressers));
     }
 

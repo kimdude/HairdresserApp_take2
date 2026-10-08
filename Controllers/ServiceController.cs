@@ -25,13 +25,8 @@ public class ServiceController : Controller
     public async Task<IActionResult> GetServices()
     {
         var services = await _context.Services!.Include(service => service.OfferedServices).ThenInclude(offeredService => offeredService.Hairdresser).Where(service => service.IsActive == true).ToListAsync();
-
-        if(services == null)
-        {
-            return NotFound();
-        }
         
-        //Return OfferedServices
+        //Return Services
         return View(services);
     }
 
@@ -66,7 +61,7 @@ public class ServiceController : Controller
     [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreateService([Bind("Title, Description, Price, Duration")] Service service)
+    public async Task<IActionResult> CreateService(Service service)
     {
         if (ModelState.IsValid)
         {
@@ -88,7 +83,7 @@ public class ServiceController : Controller
         //Getting hairdresser that don't already offer the service
         List<Hairdresser> hairdressers = await _context.Hairdressers!.Where(hairdresser => !hairdresser.OfferedServices.Any(offeredService => offeredService.ServiceId == id)).ToListAsync();
 
-        ViewData["Hairdresser"] = new SelectList(hairdressers, "Id", "Fname");
+        ViewBag.Hairdresser = new SelectList(hairdressers, "Id", "Fname");
         ViewBag.ServiceId = id;
         ViewBag.ServiceTitle = title; 
  
@@ -99,16 +94,15 @@ public class ServiceController : Controller
     [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> AddOfferedService(string ServiceTitle,[Bind("HairdresserId,ServiceId")] OfferedService offeredService)
+    public async Task<IActionResult> AddOfferedService(string ServiceTitle, OfferedService offeredService)
     {
 
-        if (ModelState.IsValid)
+        if(ModelState.IsValid)
         {
             _context.Add(offeredService);
-
             await _context.SaveChangesAsync();
-            TempData["message"] = "Tjänsten har uppdaterats.";
 
+            TempData["message"] = "Tjänsten har uppdaterats.";
             return RedirectToAction(nameof(GetServices));
         } 
         else
@@ -116,7 +110,7 @@ public class ServiceController : Controller
             //Getting hairdresser that don't already offer the service
             List<Hairdresser> hairdressers = await _context.Hairdressers!.Where(hairdresser => !hairdresser.OfferedServices.Any(os => os.ServiceId == offeredService.ServiceId)).ToListAsync();
 
-            ViewData["Hairdresser"] = new SelectList(hairdressers, "Id", "Fname");
+            ViewBag.Hairdresser = new SelectList(hairdressers, "Id", "Fname");
             ViewBag.ServiceId = offeredService.ServiceId;
             ViewBag.ServiceTitle = ServiceTitle; 
         }
@@ -127,15 +121,22 @@ public class ServiceController : Controller
     /* EDIT */
     //Return view to update service
     [Authorize]
-    public async Task<IActionResult> UpdateService(int id)
+    public async Task<IActionResult> UpdateService(int? id)
     {
 
         //Null check
+        if(id == null)
+        {
+            return NotFound();
+        }
 
-        var service = await _context.Services!.Where(service => service.Id == id).Include(service => service.OfferedServices).ThenInclude(offeredService => offeredService.Hairdresser).FirstOrDefaultAsync();
+        var service = await _context.Services!.FindAsync(id);
 
         //Null check
-
+        if(service == null)
+        {
+            return NotFound();
+        }
         
         return View(service);
     }
@@ -144,29 +145,27 @@ public class ServiceController : Controller
     [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UpdateService([Bind("Id, Title, Description, Price, Duration")] Service service)
+    public async Task<IActionResult> UpdateService(Service service)
     {
 
         if(ModelState.IsValid)
         {
-            try
-            {
-                _context.Update(service);
-                await _context.SaveChangesAsync();
-            } 
-            catch(DbUpdateConcurrencyException)
-            {
-                if(!ServiceExists(service.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            //Checking if service exists
+            var existingService = await _context.Services!.AnyAsync(s => s.Id == service.Id);
 
+            if(existingService == false)
+            {
+                return NotFound();
+            }
+            
+            //Updating service
+            _context.Update(service);
+            await _context.SaveChangesAsync();
+            
+            //Temporary message
             TempData["message"] = "Tjänsten har uppdaterats.";
+
+            //Redirecting
             return RedirectToAction(nameof(GetServices));
         }
 
@@ -182,16 +181,16 @@ public class ServiceController : Controller
     {
         Service? service = await _context.Services!.FindAsync(id);
 
-        if(service != null)
+        if(service == null)
         {
+            return NotFound();
+        } 
 
-            //Soft deleting service
-           service.IsActive = false;
-           TempData["message"] = "Tjänsten har raderats.";
-
-        }
-
+        //Soft deleting service
+        service.IsActive = false;
         await _context.SaveChangesAsync();
+
+        TempData["message"] = "Tjänsten har raderats.";
         return RedirectToAction(nameof(GetServices));
     }
 
@@ -203,20 +202,15 @@ public class ServiceController : Controller
     {
         var offeredService = await _context.OfferedServices!.FindAsync(hairdresserId, serviceId);
 
-        if(offeredService != null)
+        if(offeredService == null)
         {
-            _context.OfferedServices.Remove(offeredService);
-            await _context.SaveChangesAsync();
-
-            TempData["message"] = "Tjänsten har uppdaterats.";
+            return NotFound();
         }
 
-        return RedirectToAction(nameof(GetServices));
-    }
+        _context.OfferedServices.Remove(offeredService);
+        await _context.SaveChangesAsync();
 
-    //Function to validate hairdresser ID
-    private bool ServiceExists(int id)
-    {
-        return _context.Services!.Any(e => e.Id == id);
+        TempData["message"] = "Tjänsten har uppdaterats.";
+        return RedirectToAction(nameof(GetServices));
     }
 }

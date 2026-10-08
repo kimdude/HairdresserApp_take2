@@ -1,6 +1,4 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using HairdresserApp.Models;
 using HairdresserApp.Data;
 using Microsoft.EntityFrameworkCore;
 
