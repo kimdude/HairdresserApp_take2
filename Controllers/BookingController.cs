@@ -147,6 +147,7 @@ public class BookingController : Controller
         else if(bookingVm.BookingStep == 2)
         {
             //Set step
+            ModelState.Remove(nameof(bookingVm.Email));
             bookingVm.BookingStep = 3;
 
         }
