@@ -82,6 +82,11 @@ public class BookingController : Controller
     //Returning view to bookingform
     public async Task<IActionResult> CreateBooking(int serviceId, string serviceTitle)
     {
+
+        if(serviceId == 0)
+        {
+            return NotFound();
+        }
         
         BookingViewModel bookingVm = new BookingViewModel();
 
